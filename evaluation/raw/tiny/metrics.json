@@ -1,0 +1,37 @@
+{
+  "schema": "awtr.metrics/1",
+  "tool": "awtr",
+  "toolVersion": "1.0.0",
+  "commit": "7a73cbafe54e4d688c41919f15e833ea572d32c0",
+  "input": "/Users/amirparsamobed/Documents/University/Term 10/Bachelor Project/IndependentAfraWeakTimedReduction/evaluation/models/tiny.statespace",
+  "inputSha256": "a4b745ba9e858305d2189b14b36a4b0957f03454a354b83444cadbaa690db110",
+  "model": "tiny.statespace",
+  "timeSemantics": "unit",
+  "observableActions": [
+    "poll"
+  ],
+  "observableActionsWithoutMatch": [
+  ],
+  "originalStates": 6,
+  "originalTransitions": 7,
+  "refinedStates": 11,
+  "refinedTransitions": 12,
+  "classCount": 5,
+  "declaredStateClassCount": 3,
+  "reducedStates": 2,
+  "reducedTransitions": 2,
+  "stateReductionRatio": 0.666667,
+  "transitionReductionRatio": 0.714286,
+  "refinementRounds": 5,
+  "weakTransitions": 16,
+  "splicedChains": 1,
+  "elapsedMillis": 61,
+  "peakHeapBytes": 6193152,
+  "verification": {
+    "valid": true,
+    "relatedPairs": 11,
+    "transferChecks": 52,
+    "violations": [
+    ]
+  }
+}

@@ -25,11 +25,11 @@ import ir.ut.ce.awtr.weak.UnitDelayRefinement;
  *
  * <p>After a unit-delay refinement the raw quotient speaks only in single time
  * units, which is faithful but unreadable — a ten-unit wait becomes nine
- * intermediate classes. A second pass splices back any maximal chain of classes
- * that exist purely to carry time, replacing it with one edge whose duration is
- * the sum. Only classes made up entirely of states the refinement introduced
- * are spliced, so every state the user's model declared keeps a quotient state
- * of its own.
+ * intermediate classes, and the "reduced" model comes out larger than the one
+ * it reduced. A second pass splices back any maximal chain of classes that
+ * exist purely to carry time, replacing it with one edge whose duration is the
+ * sum. A class qualifies only when the sole way in and the sole way out are
+ * delay edges, so no choice and no observable step is ever merged away.
  *
  * <p>Splicing records where each removed class sat in its chain. Re-expanding
  * the spliced quotient therefore reproduces the raw one exactly, and that
@@ -63,23 +63,27 @@ public final class QuotientBuilder {
             outgoing.add(new LinkedHashSet<>());
         }
         for (Transition t : refined.transitions()) {
-            outgoing.get(partition.blockOf(t.source()))
-                    .add(new Edge(t.label(), partition.blockOf(t.target())));
+            int from = partition.blockOf(t.source());
+            int to = partition.blockOf(t.target());
+            // A silent step inside a class is invisible by construction: the tau
+            // closure of a state already contains that state, so a tau self-loop
+            // adds nothing to any weak move. Dropping it keeps the reduced model
+            // readable without changing what it means.
+            if (t.label().isTau() && from == to) {
+                continue;
+            }
+            outgoing.get(from).add(new Edge(t.label(), to));
         }
 
-        // A class may be spliced when it does nothing but let time pass. That is
-        // a structural property of the class, deliberately not a property of
-        // which states happen to sit in it: if it depended on whether the input
+        // A class may be removed when it is nothing but an instant part way
+        // through a wait: time in, time out, and no choice at either end. That
+        // is a structural property of the class, deliberately not a property of
+        // which states happen to sit in it — if it depended on whether the input
         // declared a state mid-wait, two bisimilar models would reduce to
         // different-sized quotients purely because one of them names an instant
         // the other passes through silently.
         int initialBlock = partition.blockOf(refined.initialState());
-        boolean[] splicable = new boolean[blockCount];
-        for (int i = 0; i < blockCount; i++) {
-            splicable[i] = i != initialBlock && isTimeOnly(outgoing.get(i));
-        }
-
-        Splicer splicer = new Splicer(outgoing, splicable);
+        Splicer splicer = new Splicer(outgoing, initialBlock);
         splicer.run();
 
         Map<Integer, String> name = new LinkedHashMap<>();
@@ -146,11 +150,6 @@ public final class QuotientBuilder {
                 countSynthetic(partition, isSynthetic));
     }
 
-    /** A class that only lets time pass: one delay edge out, nothing else. */
-    private static boolean isTimeOnly(Set<Edge> outgoing) {
-        return outgoing.size() == 1 && outgoing.iterator().next().label().isDelay();
-    }
-
     private static int countSynthetic(Partition partition, Predicate<String> isSynthetic) {
         int count = 0;
         for (int i = 0; i < partition.blockCount(); i++) {
@@ -171,60 +170,75 @@ public final class QuotientBuilder {
 
     private static final class Splicer {
         private final List<Set<Edge>> outgoing;
-        private final boolean[] splicable;
+        private final int initialBlock;
         private final boolean[] alive;
+        private final boolean[] removable;
         private final List<Chain> chains = new ArrayList<>();
 
-        Splicer(List<Set<Edge>> outgoing, boolean[] splicable) {
+        Splicer(List<Set<Edge>> outgoing, int initialBlock) {
             this.outgoing = outgoing;
-            this.splicable = splicable;
+            this.initialBlock = initialBlock;
             this.alive = new boolean[outgoing.size()];
+            this.removable = new boolean[outgoing.size()];
             java.util.Arrays.fill(alive, true);
         }
 
         void run() {
-            int[] inDegree = new int[outgoing.size()];
-            for (Set<Edge> edges : outgoing) {
-                for (Edge edge : edges) {
-                    inDegree[edge.target()]++;
-                }
-            }
+            markRemovable();
             for (int start = 0; start < outgoing.size(); start++) {
-                if (splicable[start]) {
-                    continue;
+                if (removable[start]) {
+                    continue;   // start belongs to somebody else's chain
                 }
                 for (Edge first : new ArrayList<>(outgoing.get(start))) {
-                    if (!first.label().isDelay() || !splicable[first.target()]) {
-                        continue;
+                    if (first.label().isDelay() && removable[first.target()]) {
+                        collapseFrom(start, first);
                     }
-                    collapseFrom(start, first, inDegree);
                 }
             }
         }
 
         /**
-         * Follows a chain of time-only classes out of {@code start}. A class
-         * joins the chain only if it does nothing but let one unit of time pass
-         * between exactly one predecessor and exactly one successor.
+         * A class is removable when the only way in is one delay edge, the only
+         * way out is one delay edge, and it is not the initial class. Anything
+         * else — a choice, a visible action, a second predecessor — makes the
+         * instant observable, and merging it away would change the model.
          */
-        private void collapseFrom(int start, Edge first, int[] inDegree) {
+        private void markRemovable() {
+            int size = outgoing.size();
+            int[] inDegree = new int[size];
+            boolean[] allInboundAreDelays = new boolean[size];
+            java.util.Arrays.fill(allInboundAreDelays, true);
+            for (Set<Edge> edges : outgoing) {
+                for (Edge edge : edges) {
+                    inDegree[edge.target()]++;
+                    if (!edge.label().isDelay()) {
+                        allInboundAreDelays[edge.target()] = false;
+                    }
+                }
+            }
+            for (int block = 0; block < size; block++) {
+                Set<Edge> out = outgoing.get(block);
+                removable[block] = block != initialBlock
+                        && inDegree[block] == 1
+                        && allInboundAreDelays[block]
+                        && out.size() == 1
+                        && out.iterator().next().label().isDelay()
+                        && out.iterator().next().target() != block;
+            }
+        }
+
+        /** Walks the maximal chain of removable classes leaving {@code start}. */
+        private void collapseFrom(int start, Edge first) {
             List<Integer> members = new ArrayList<>();
             List<Integer> offsets = new ArrayList<>();
             int total = first.label().delayUnits();
             int current = first.target();
-            Edge onward = first;
 
-            while (splicable[current] && alive[current]
-                    && inDegree[current] == 1
-                    && outgoing.get(current).size() == 1) {
+            while (removable[current] && alive[current]) {
                 Edge next = outgoing.get(current).iterator().next();
-                if (!next.label().isDelay() || next.target() == current) {
-                    break;
-                }
                 members.add(current);
                 offsets.add(total);
                 total += next.label().delayUnits();
-                onward = next;
                 current = next.target();
             }
             if (members.isEmpty()) {
@@ -237,8 +251,6 @@ public final class QuotientBuilder {
             outgoing.get(start).remove(first);
             outgoing.get(start).add(new Edge(Label.delay(total), current));
             chains.add(new Chain(start, current, members, offsets, total));
-            // `onward` is consumed by the collapse; referenced for clarity only.
-            assert onward.target() == current;
         }
     }
 }

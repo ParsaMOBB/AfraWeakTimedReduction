@@ -1,0 +1,39 @@
+{
+  "schema": "awtr.reduced-tts/1",
+  "model": "tiny.statespace",
+  "timeSemantics": "unit",
+  "observableActions": [
+    "poll"
+  ],
+  "initialState": "q0",
+  "states": [
+    {
+      "id": "q0",
+      "represents": [
+        "p0",
+        "p1",
+        "p2"
+      ]
+    },
+    {
+      "id": "q1",
+      "represents": [
+        "p3"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "source": "q0",
+      "kind": "delay",
+      "units": 4,
+      "target": "q1"
+    },
+    {
+      "source": "q1",
+      "kind": "action",
+      "action": "poll",
+      "target": "q0"
+    }
+  ]
+}

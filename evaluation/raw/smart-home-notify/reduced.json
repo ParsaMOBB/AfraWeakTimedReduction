@@ -1,0 +1,171 @@
+{
+  "schema": "awtr.reduced-tts/1",
+  "model": "smarthome-notify.statespace",
+  "timeSemantics": "unit",
+  "observableActions": [
+    "getSense",
+    "activateh",
+    "switchoff"
+  ],
+  "initialState": "q0",
+  "states": [
+    {
+      "id": "q0",
+      "represents": [
+        "S0",
+        "S33",
+        "S7"
+      ]
+    },
+    {
+      "id": "q1",
+      "represents": [
+        "S1",
+        "S16",
+        "S20",
+        "S3",
+        "S34",
+        "S36"
+      ]
+    },
+    {
+      "id": "q2",
+      "represents": [
+        "S10",
+        "S11",
+        "S12",
+        "S23",
+        "S40",
+        "S41",
+        "S8"
+      ]
+    },
+    {
+      "id": "q3",
+      "represents": [
+        "S15"
+      ]
+    },
+    {
+      "id": "q4",
+      "represents": [
+        "S17",
+        "S2",
+        "S24",
+        "S35",
+        "S37",
+        "S4"
+      ]
+    },
+    {
+      "id": "q5",
+      "represents": [
+        "S18",
+        "S21"
+      ]
+    },
+    {
+      "id": "q6",
+      "represents": [
+        "S19",
+        "S22"
+      ]
+    },
+    {
+      "id": "q7",
+      "represents": [
+        "S25",
+        "S27"
+      ]
+    },
+    {
+      "id": "q8",
+      "represents": [
+        "S26",
+        "S28",
+        "S29",
+        "S30",
+        "S39",
+        "S6"
+      ]
+    },
+    {
+      "id": "q9",
+      "represents": [
+        "S38",
+        "S5",
+        "S9"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "source": "q0",
+      "kind": "tau",
+      "target": "q1"
+    },
+    {
+      "source": "q0",
+      "kind": "tau",
+      "target": "q4"
+    },
+    {
+      "source": "q1",
+      "kind": "action",
+      "action": "getSense",
+      "target": "q9"
+    },
+    {
+      "source": "q2",
+      "kind": "delay",
+      "units": 10,
+      "target": "q3"
+    },
+    {
+      "source": "q3",
+      "kind": "tau",
+      "target": "q5"
+    },
+    {
+      "source": "q3",
+      "kind": "tau",
+      "target": "q6"
+    },
+    {
+      "source": "q4",
+      "kind": "action",
+      "action": "getSense",
+      "target": "q8"
+    },
+    {
+      "source": "q5",
+      "kind": "action",
+      "action": "getSense",
+      "target": "q2"
+    },
+    {
+      "source": "q6",
+      "kind": "action",
+      "action": "getSense",
+      "target": "q7"
+    },
+    {
+      "source": "q7",
+      "kind": "action",
+      "action": "switchoff",
+      "target": "q8"
+    },
+    {
+      "source": "q8",
+      "kind": "delay",
+      "units": 10,
+      "target": "q0"
+    },
+    {
+      "source": "q9",
+      "kind": "action",
+      "action": "activateh",
+      "target": "q2"
+    }
+  ]
+}

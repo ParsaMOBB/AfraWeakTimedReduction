@@ -1,0 +1,6 @@
+<transitionsystem>
+<state id="q0" atomicpropositions=""></state>
+<state id="q1" atomicpropositions=""></state>
+<transition source="q0" destination="q1" executionTime="0" shift="0"><time value="4"/></transition>
+<transition source="q1" destination="q0" executionTime="0" shift="0"><messageserver sender="" owner="" title="poll"/></transition>
+</transitionsystem>

@@ -1,0 +1,79 @@
+<transitionsystem>
+<state id="S1_0" atomicpropositions="" >
+</state>
+<state id="S2_0" atomicpropositions="" >
+</state>
+<state id="S3_0" atomicpropositions="" >
+</state>
+<state id="S4_0" atomicpropositions="" >
+</state>
+<state id="S5_0" atomicpropositions="" >
+</state>
+<state id="S6_0" atomicpropositions="" >
+</state>
+<state id="S7_0" atomicpropositions="" >
+</state>
+<state id="S9_0" atomicpropositions="" >
+</state>
+<state id="S10_0" atomicpropositions="" >
+</state>
+<state id="S11_0" atomicpropositions="" >
+</state>
+<state id="S14_0" atomicpropositions="" >
+</state>
+<state id="S15_0" atomicpropositions="" >
+</state>
+<state id="S18_0" atomicpropositions="" >
+</state>
+<state id="S19_0" atomicpropositions="" >
+</state>
+<state id="S21_0" atomicpropositions="" >
+</state>
+<state id="S22_0" atomicpropositions="" >
+</state>
+<state id="S24_0" atomicpropositions="" >
+</state>
+<state id="S25_0" atomicpropositions="" >
+</state>
+<state id="S8_0" atomicpropositions="" >
+</state>
+<state id="S12_0" atomicpropositions="" >
+</state>
+<state id="S13_0" atomicpropositions="" >
+</state>
+<state id="S16_0" atomicpropositions="" >
+</state>
+<state id="S17_0" atomicpropositions="" >
+</state>
+<state id="S20_0" atomicpropositions="" >
+</state>
+<state id="S23_0" atomicpropositions="" >
+</state>
+<transition source="S1_0" destination="S2_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S1_0" destination="S3_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S2_0" destination="S4_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S3_0" destination="S5_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S4_0" destination="S6_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>
+<transition source="S5_0" destination="S7_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>
+<transition source="S6_0" destination="S9_0" executionTime="0" shift="0"> <messageserver sender="" owner="hc_unit" title="activateh"/></transition>
+<transition source="S9_0" destination="S10_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="REGULATE"/></transition>
+<transition source="S10_0" destination="S11_0" executionTime="0" shift="0"> <time value="7"/></transition>
+<transition source="S11_0" destination="S14_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="CARRIER_CHANGE_OF_TEMP"/></transition>
+<transition source="S14_0" destination="S15_0" executionTime="0" shift="0"> <time value="3"/></transition>
+<transition source="S15_0" destination="S18_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S15_0" destination="S19_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S18_0" destination="S21_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S19_0" destination="S22_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S21_0" destination="S10_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>
+<transition source="S22_0" destination="S24_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>
+<transition source="S24_0" destination="S25_0" executionTime="0" shift="0"> <messageserver sender="" owner="hc_unit" title="switchoff"/></transition>
+<transition source="S25_0" destination="S7_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="REGULATE"/></transition>
+<transition source="S7_0" destination="S8_0" executionTime="0" shift="0"> <time value="7"/></transition>
+<transition source="S8_0" destination="S12_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="CARRIER_CHANGE_OF_TEMP"/></transition>
+<transition source="S12_0" destination="S13_0" executionTime="0" shift="0"> <time value="3"/></transition>
+<transition source="S13_0" destination="S16_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S13_0" destination="S17_0" executionTime="0" shift="0"> <messageserver sender="" owner="room" title="TEMPCHANGE"/></transition>
+<transition source="S16_0" destination="S20_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S17_0" destination="S23_0" executionTime="0" shift="0"> <messageserver sender="" owner="sensor" title="GETTEMP"/></transition>
+<transition source="S20_0" destination="S6_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>
+<transition source="S23_0" destination="S7_0" executionTime="0" shift="0"> <messageserver sender="" owner="controller" title="getSense"/></transition>

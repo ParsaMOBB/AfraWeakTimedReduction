@@ -1,0 +1,39 @@
+{
+  "schema": "awtr.metrics/1",
+  "tool": "awtr",
+  "toolVersion": "1.0.0",
+  "commit": "7a73cbafe54e4d688c41919f15e833ea572d32c0",
+  "input": "/Users/amirparsamobed/Documents/University/Term 10/Bachelor Project/IndependentAfraWeakTimedReduction/evaluation/models/smarthome-notify.statespace",
+  "inputSha256": "f7e6ab53cf5b3639713c6a79d98d6f20c4516e6b188a85c5608adbdf5aa56b68",
+  "model": "smarthome-notify.statespace",
+  "timeSemantics": "unit",
+  "observableActions": [
+    "getSense",
+    "activateh",
+    "switchoff"
+  ],
+  "observableActionsWithoutMatch": [
+  ],
+  "originalStates": 42,
+  "originalTransitions": 52,
+  "refinedStates": 85,
+  "refinedTransitions": 95,
+  "classCount": 28,
+  "declaredStateClassCount": 12,
+  "reducedStates": 10,
+  "reducedTransitions": 12,
+  "stateReductionRatio": 0.761905,
+  "transitionReductionRatio": 0.769231,
+  "refinementRounds": 14,
+  "weakTransitions": 134,
+  "splicedChains": 2,
+  "elapsedMillis": 69,
+  "peakHeapBytes": 8290304,
+  "verification": {
+    "valid": true,
+    "relatedPairs": 85,
+    "transferChecks": 454,
+    "violations": [
+    ]
+  }
+}

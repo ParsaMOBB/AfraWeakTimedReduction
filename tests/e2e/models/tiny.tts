@@ -1,0 +1,14 @@
+# Hand-checkable end-to-end model.
+# poll is observable; tick and reset are hidden. Both branches of the choice
+# wait the same total time and then do the same visible thing, so they must
+# collapse into one class.
+model tiny
+initial p0
+
+trans p0 -> p1 : msg dev.tick
+trans p0 -> p2 : msg dev.tick
+trans p1 -> p3 : time 4
+trans p2 -> p4 : time 1
+trans p4 -> p5 : msg dev.reset
+trans p5 -> p3 : time 3
+trans p3 -> p0 : msg dev.poll

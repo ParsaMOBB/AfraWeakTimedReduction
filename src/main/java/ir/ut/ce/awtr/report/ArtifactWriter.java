@@ -101,6 +101,19 @@ public final class ArtifactWriter {
             json.member(state, result.inputPartition().blockOf(state));
         }
         json.endObject();
+
+        // Where each declared state ended up in the reduced model. Most land on
+        // a quotient state; one whose class was a bare instant part way through
+        // a wait lands on a quotient delay edge instead, named
+        // <from>#<units>#<to>@<offset>. Either way it stays traceable.
+        json.name("stateToReducedModel").beginObject();
+        for (String state : result.hidden().states()) {
+            String quotientState = result.quotient().stateOfInput().get(state);
+            json.member(state, quotientState != null
+                    ? quotientState
+                    : result.quotient().expandedStateOfClass().get(state));
+        }
+        json.endObject();
         return json.endObject().toString();
     }
 
@@ -226,7 +239,8 @@ public final class ArtifactWriter {
         json.member("refinementRounds", result.refinementRounds())
                 .member("weakTransitions", result.weakTransitionCount())
                 .member("splicedChains", result.quotient().splicedChains())
-                .member("elapsedMillis", result.elapsedNanos() / 1_000_000L);
+                .member("elapsedMillis", result.elapsedNanos() / 1_000_000L)
+                .member("peakHeapBytes", peakHeapBytes());
         if (result.verification() != null) {
             json.name("verification").beginObject()
                     .member("valid", result.verification().valid())
@@ -236,6 +250,24 @@ public final class ArtifactWriter {
                     .endObject();
         }
         return json.endObject().toString();
+    }
+
+    /**
+     * Peak heap the JVM actually used, summed over its heap pools. Reported so
+     * the evaluation does not have to guess at memory from the outside; it
+     * covers the whole process, so for a single reduction per JVM it is the
+     * figure of interest.
+     */
+    private static long peakHeapBytes() {
+        long peak = 0;
+        for (java.lang.management.MemoryPoolMXBean pool
+                : java.lang.management.ManagementFactory.getMemoryPoolMXBeans()) {
+            if (pool.getType() == java.lang.management.MemoryType.HEAP
+                    && pool.getPeakUsage() != null) {
+                peak += pool.getPeakUsage().getUsed();
+            }
+        }
+        return peak;
     }
 
     public static String sha256(Path file) {

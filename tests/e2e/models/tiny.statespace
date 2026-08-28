@@ -1,0 +1,20 @@
+<transitionsystem>
+<state id="p0" atomicpropositions="" >
+</state>
+<state id="p1" atomicpropositions="" >
+</state>
+<state id="p2" atomicpropositions="" >
+</state>
+<state id="p3" atomicpropositions="" >
+</state>
+<state id="p4" atomicpropositions="" >
+</state>
+<state id="p5" atomicpropositions="" >
+</state>
+<transition source="p0" destination="p1" executionTime="0" shift="0"> <messageserver sender="" owner="dev" title="tick"/></transition>
+<transition source="p0" destination="p2" executionTime="0" shift="0"> <messageserver sender="" owner="dev" title="tick"/></transition>
+<transition source="p1" destination="p3" executionTime="0" shift="0"> <time value="4"/></transition>
+<transition source="p2" destination="p4" executionTime="0" shift="0"> <time value="1"/></transition>
+<transition source="p4" destination="p5" executionTime="0" shift="0"> <messageserver sender="" owner="dev" title="reset"/></transition>
+<transition source="p5" destination="p3" executionTime="0" shift="0"> <time value="3"/></transition>
+<transition source="p3" destination="p0" executionTime="0" shift="0"> <messageserver sender="" owner="dev" title="poll"/></transition>

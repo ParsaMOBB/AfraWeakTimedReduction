@@ -1,0 +1,116 @@
+{
+  "schema": "awtr.partition/1",
+  "model": "smarthome.statespace",
+  "observableActions": [
+    "getSense",
+    "activateh",
+    "switchoff"
+  ],
+  "timeSemantics": "unit",
+  "declaredStateCount": 16,
+  "classCount": 10,
+  "classes": [
+    {
+      "class": 0,
+      "states": [
+        "S0"
+      ]
+    },
+    {
+      "class": 1,
+      "states": [
+        "S1",
+        "S2"
+      ]
+    },
+    {
+      "class": 2,
+      "states": [
+        "S10",
+        "S9"
+      ]
+    },
+    {
+      "class": 3,
+      "states": [
+        "S11",
+        "S8"
+      ]
+    },
+    {
+      "class": 4,
+      "states": [
+        "S12"
+      ]
+    },
+    {
+      "class": 5,
+      "states": [
+        "S13",
+        "S4"
+      ]
+    },
+    {
+      "class": 6,
+      "states": [
+        "S14",
+        "S7"
+      ]
+    },
+    {
+      "class": 7,
+      "states": [
+        "S15",
+        "S6"
+      ]
+    },
+    {
+      "class": 8,
+      "states": [
+        "S3"
+      ]
+    },
+    {
+      "class": 9,
+      "states": [
+        "S5"
+      ]
+    }
+  ],
+  "stateToClass": {
+    "S0": 0,
+    "S11": 3,
+    "S14": 6,
+    "S8": 3,
+    "S7": 6,
+    "S5": 9,
+    "S4": 5,
+    "S13": 5,
+    "S12": 4,
+    "S10": 2,
+    "S15": 7,
+    "S9": 2,
+    "S6": 7,
+    "S3": 8,
+    "S2": 1,
+    "S1": 1
+  },
+  "stateToReducedModel": {
+    "S0": "q0",
+    "S11": "q3",
+    "S14": "q6",
+    "S8": "q3",
+    "S7": "q6",
+    "S5": "q9",
+    "S4": "q5",
+    "S13": "q5",
+    "S12": "q4",
+    "S10": "q2",
+    "S15": "q7",
+    "S9": "q2",
+    "S6": "q7",
+    "S3": "q8",
+    "S2": "q1",
+    "S1": "q1"
+  }
+}

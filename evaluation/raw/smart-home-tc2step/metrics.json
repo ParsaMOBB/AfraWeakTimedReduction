@@ -1,0 +1,39 @@
+{
+  "schema": "awtr.metrics/1",
+  "tool": "awtr",
+  "toolVersion": "1.0.0",
+  "commit": "7a73cbafe54e4d688c41919f15e833ea572d32c0",
+  "input": "/Users/amirparsamobed/Documents/University/Term 10/Bachelor Project/IndependentAfraWeakTimedReduction/evaluation/models/smarthome-tc2step.statespace",
+  "inputSha256": "2064d4ab9057a36b4aa2a73a34d984e2c446f8d2a78200067994b661a7169f54",
+  "model": "smarthome-tc2step.statespace",
+  "timeSemantics": "unit",
+  "observableActions": [
+    "getSense",
+    "activateh",
+    "switchoff"
+  ],
+  "observableActionsWithoutMatch": [
+  ],
+  "originalStates": 25,
+  "originalTransitions": 28,
+  "refinedStates": 41,
+  "refinedTransitions": 44,
+  "classCount": 28,
+  "declaredStateClassCount": 12,
+  "reducedStates": 10,
+  "reducedTransitions": 12,
+  "stateReductionRatio": 0.600000,
+  "transitionReductionRatio": 0.571429,
+  "refinementRounds": 14,
+  "weakTransitions": 56,
+  "splicedChains": 2,
+  "elapsedMillis": 61,
+  "peakHeapBytes": 7241728,
+  "verification": {
+    "valid": true,
+    "relatedPairs": 41,
+    "transferChecks": 214,
+    "violations": [
+    ]
+  }
+}

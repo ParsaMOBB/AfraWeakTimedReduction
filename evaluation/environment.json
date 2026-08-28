@@ -1,0 +1,8 @@
+{
+  "os": "Darwin 23.6.0",
+  "machine": "arm64",
+  "cpuCount": 8,
+  "java": "openjdk version \"17.0.10\" 2024-01-16 LTS",
+  "command": "java -jar /Users/amirparsamobed/Documents/University/Term 10/Bachelor Project/IndependentAfraWeakTimedReduction/target/awtr.jar",
+  "generatedAt": "2026-08-29T02:26:50+0330"
+}

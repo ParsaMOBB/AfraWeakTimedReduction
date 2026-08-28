@@ -1,0 +1,4 @@
+<transitionsystem>
+<state id="1_0" atomicpropositions="" >
+</state>
+<transition source="1_0" destination="404_0" executionTime="0" shift="0"> <time value="1"/></transition>

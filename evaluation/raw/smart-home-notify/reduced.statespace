@@ -1,0 +1,24 @@
+<transitionsystem>
+<state id="q0" atomicpropositions=""></state>
+<state id="q1" atomicpropositions=""></state>
+<state id="q2" atomicpropositions=""></state>
+<state id="q3" atomicpropositions=""></state>
+<state id="q4" atomicpropositions=""></state>
+<state id="q5" atomicpropositions=""></state>
+<state id="q6" atomicpropositions=""></state>
+<state id="q7" atomicpropositions=""></state>
+<state id="q8" atomicpropositions=""></state>
+<state id="q9" atomicpropositions=""></state>
+<transition source="q0" destination="q1" executionTime="0" shift="0"></transition>
+<transition source="q0" destination="q4" executionTime="0" shift="0"></transition>
+<transition source="q1" destination="q9" executionTime="0" shift="0"><messageserver sender="" owner="" title="getSense"/></transition>
+<transition source="q2" destination="q3" executionTime="0" shift="0"><time value="10"/></transition>
+<transition source="q3" destination="q5" executionTime="0" shift="0"></transition>
+<transition source="q3" destination="q6" executionTime="0" shift="0"></transition>
+<transition source="q4" destination="q8" executionTime="0" shift="0"><messageserver sender="" owner="" title="getSense"/></transition>
+<transition source="q5" destination="q2" executionTime="0" shift="0"><messageserver sender="" owner="" title="getSense"/></transition>
+<transition source="q6" destination="q7" executionTime="0" shift="0"><messageserver sender="" owner="" title="getSense"/></transition>
+<transition source="q7" destination="q8" executionTime="0" shift="0"><messageserver sender="" owner="" title="switchoff"/></transition>
+<transition source="q8" destination="q0" executionTime="0" shift="0"><time value="10"/></transition>
+<transition source="q9" destination="q2" executionTime="0" shift="0"><messageserver sender="" owner="" title="activateh"/></transition>
+</transitionsystem>

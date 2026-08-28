@@ -1,0 +1,25 @@
+digraph reduced {
+  rankdir=TB;
+  q1 [label="q1", shape=doublecircle];
+  q0 [label="q0"];
+  q2 [label="q2"];
+  q3 [label="q3"];
+  q4 [label="q4"];
+  q5 [label="q5"];
+  q6 [label="q6"];
+  q7 [label="q7"];
+  q8 [label="q8"];
+  q9 [label="q9"];
+  q0 -> q2 [label="time +=10", style=bold, color=red];
+  q1 -> q3 [label="tau"];
+  q1 -> q4 [label="tau"];
+  q2 -> q5 [label="tau"];
+  q2 -> q6 [label="tau"];
+  q3 -> q9 [label="getSense"];
+  q4 -> q8 [label="getSense"];
+  q5 -> q0 [label="getSense"];
+  q6 -> q7 [label="getSense"];
+  q7 -> q8 [label="switchoff"];
+  q8 -> q1 [label="time +=10", style=bold, color=red];
+  q9 -> q0 [label="activateh"];
+}
