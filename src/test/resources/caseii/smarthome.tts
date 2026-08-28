@@ -1,0 +1,24 @@
+# Transcribed from Examples/case II/SmartHome.png
+# See docs/case-ii-provenance.md for the transcription method and edge table.
+# 16 states, 18 transitions.
+model SmartHome
+initial S0
+
+trans S0  -> S11 : msg room.tempchange
+trans S0  -> S14 : msg room.tempchange
+trans S11 -> S8  : msg sensor.gettemp
+trans S14 -> S7  : msg sensor.gettemp
+trans S8  -> S5  : msg controller.getSense
+trans S5  -> S4  : msg hc_unit.activateh
+trans S4  -> S13 : msg room.regulate
+trans S13 -> S12 : time 10
+trans S12 -> S10 : msg room.tempchange
+trans S12 -> S15 : msg room.tempchange
+trans S10 -> S9  : msg sensor.gettemp
+trans S9  -> S13 : msg controller.getSense
+trans S15 -> S6  : msg sensor.gettemp
+trans S6  -> S3  : msg controller.getSense
+trans S3  -> S2  : msg hc_unit.switchoff
+trans S2  -> S1  : msg room.regulate
+trans S7  -> S1  : msg controller.getSense
+trans S1  -> S0  : time 10

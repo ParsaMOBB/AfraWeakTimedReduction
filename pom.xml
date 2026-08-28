@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ir.ut.ce.awtr</groupId>
+  <artifactId>awtr</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>Afra Weak Timed Reduction</name>
+  <description>
+    Reduces an Afra/RMC Timed Rebeca TTS state-space export modulo weak timed
+    bisimilarity over discrete time, and emits the quotient transition system.
+  </description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Java release, plugin and JUnit versions are pinned to the values used by
+         the official Afra toolchain so this artefact can later be embedded in an
+         Afra plug-in without a toolchain conflict.  See docs/afra-integration.md
+         for the exact upstream revisions these were read from. -->
+    <compilerversion>17</compilerversion>
+    <maven.compiler.release>${compilerversion}</maven.compiler.release>
+    <org.apache.maven.plugins.compiler.version>3.11.0</org.apache.maven.plugins.compiler.version>
+    <org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
+    <junit.jupiter.version>5.10.1</junit.jupiter.version>
+    <mainClass>ir.ut.ce.awtr.app.Cli</mainClass>
+  </properties>
+
+  <!-- Deliberately no runtime dependencies.  Everything the reducer needs
+       (StAX for the Afra .statespace dialect) is in the Java SE platform, so the
+       jar can be dropped onto an Eclipse/Spring classpath without dragging in a
+       JSON or XML binding stack that could clash with Afra's own. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>awtr</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${org.apache.maven.plugins.compiler.version}</version>
+        <configuration>
+          <release>${compilerversion}</release>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${org.apache.maven.plugins.surefire.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${mainClass}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

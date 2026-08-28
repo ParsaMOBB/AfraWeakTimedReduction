@@ -1,0 +1,60 @@
+# Transcribed from Examples/case II/SmartHome-notify.png
+# See docs/case-ii-provenance.md for the transcription method and edge table.
+# 42 states, 52 transitions.
+# This model adds a `notifyer` actor, which splits the 10-unit wait of
+# SmartHome.png into 3 units, an internal notification step, and 7 more units.
+model SmartHomeNotify
+initial S0
+
+trans S0  -> S1  : msg room.tempchange
+trans S0  -> S2  : msg room.tempchange
+trans S1  -> S3  : msg sensor.gettemp
+trans S2  -> S4  : msg sensor.gettemp
+trans S4  -> S6  : msg controller.getSense
+trans S3  -> S5  : msg controller.getSense
+trans S24 -> S6  : msg controller.getSense
+trans S6  -> S7  : time 10
+trans S7  -> S16 : msg room.tempchange
+trans S7  -> S17 : msg room.tempchange
+trans S17 -> S24 : msg sensor.gettemp
+trans S16 -> S20 : msg sensor.gettemp
+trans S20 -> S5  : msg controller.getSense
+trans S5  -> S8  : msg hc_unit.activateh
+trans S5  -> S9  : msg notifyer.notify
+trans S8  -> S10 : msg room.regulate
+trans S8  -> S11 : msg notifyer.notify
+trans S9  -> S11 : msg hc_unit.activateh
+trans S10 -> S12 : msg notifyer.notify
+trans S11 -> S12 : msg room.regulate
+trans S12 -> S13 : time 3
+trans S13 -> S14 : msg notifyer.send_signal
+trans S14 -> S15 : time 7
+trans S15 -> S19 : msg room.tempchange
+trans S15 -> S18 : msg room.tempchange
+trans S23 -> S15 : time 10
+trans S18 -> S21 : msg sensor.gettemp
+trans S19 -> S22 : msg sensor.gettemp
+trans S22 -> S25 : msg controller.getSense
+trans S21 -> S23 : msg controller.getSense
+trans S25 -> S26 : msg hc_unit.switchoff
+trans S25 -> S27 : msg notifyer.notify
+trans S26 -> S29 : msg notifyer.notify
+trans S27 -> S29 : msg hc_unit.switchoff
+trans S26 -> S28 : msg room.regulate
+trans S28 -> S30 : msg notifyer.notify
+trans S29 -> S30 : msg room.regulate
+trans S30 -> S31 : time 3
+trans S31 -> S32 : msg notifyer.send_signal
+trans S32 -> S33 : time 7
+trans S33 -> S34 : msg room.tempchange
+trans S33 -> S35 : msg room.tempchange
+trans S39 -> S33 : time 10
+trans S34 -> S36 : msg sensor.gettemp
+trans S35 -> S37 : msg sensor.gettemp
+trans S36 -> S38 : msg controller.getSense
+trans S37 -> S39 : msg controller.getSense
+trans S38 -> S40 : msg hc_unit.activateh
+trans S38 -> S9  : msg notifyer.notify
+trans S40 -> S41 : msg room.regulate
+trans S40 -> S11 : msg notifyer.notify
+trans S41 -> S12 : msg notifyer.notify

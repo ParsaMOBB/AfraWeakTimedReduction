@@ -1,0 +1,37 @@
+# Transcribed from Examples/case II/SmartHome-tc2step.png
+# See docs/case-ii-provenance.md for the transcription method and edge table.
+# 25 states, 28 transitions.
+# State ids are Afra's own `<stateID>_<bundle>` form, as rendered by the official
+# Graphviz transformer. This model splits the 10-unit wait of SmartHome.png into
+# 7 units, an internal carrier step, and 3 more units.
+model SmartHomeTc2Step
+initial S1_0
+
+trans S1_0  -> S2_0  : msg room.TEMPCHANGE
+trans S1_0  -> S3_0  : msg room.TEMPCHANGE
+trans S2_0  -> S4_0  : msg sensor.GETTEMP
+trans S3_0  -> S5_0  : msg sensor.GETTEMP
+trans S4_0  -> S6_0  : msg controller.getSense
+trans S5_0  -> S7_0  : msg controller.getSense
+trans S6_0  -> S9_0  : msg hc_unit.activateh
+trans S9_0  -> S10_0 : msg room.REGULATE
+trans S10_0 -> S11_0 : time 7
+trans S11_0 -> S14_0 : msg room.CARRIER_CHANGE_OF_TEMP
+trans S14_0 -> S15_0 : time 3
+trans S15_0 -> S18_0 : msg room.TEMPCHANGE
+trans S15_0 -> S19_0 : msg room.TEMPCHANGE
+trans S18_0 -> S21_0 : msg sensor.GETTEMP
+trans S19_0 -> S22_0 : msg sensor.GETTEMP
+trans S21_0 -> S10_0 : msg controller.getSense
+trans S22_0 -> S24_0 : msg controller.getSense
+trans S24_0 -> S25_0 : msg hc_unit.switchoff
+trans S25_0 -> S7_0  : msg room.REGULATE
+trans S7_0  -> S8_0  : time 7
+trans S8_0  -> S12_0 : msg room.CARRIER_CHANGE_OF_TEMP
+trans S12_0 -> S13_0 : time 3
+trans S13_0 -> S16_0 : msg room.TEMPCHANGE
+trans S13_0 -> S17_0 : msg room.TEMPCHANGE
+trans S16_0 -> S20_0 : msg sensor.GETTEMP
+trans S17_0 -> S23_0 : msg sensor.GETTEMP
+trans S20_0 -> S6_0  : msg controller.getSense
+trans S23_0 -> S7_0  : msg controller.getSense
