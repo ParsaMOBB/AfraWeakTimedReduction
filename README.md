@@ -151,6 +151,7 @@ on one quotient is a stronger statement than the checker returning "yes".
 
 | | |
 | --- | --- |
+| [**thesis-handoff.md**](docs/thesis-handoff.md) | **start here if you are writing the thesis or poster** — what exists, which numbers are citable, which claims are not defensible |
 | [afra-input-contract.md](docs/afra-input-contract.md) | the `.statespace` dialect, from official sources |
 | [afra-integration.md](docs/afra-integration.md) | toolchain compatibility and the future in-process adapter |
 | [semantics.md](docs/semantics.md) | the discrete weak timed semantics as implemented |
