@@ -1,0 +1,95 @@
+/*
+ * Documentation only - nothing in this repository compiles Rebeca source.
+ *
+ * This records the shape of the Timed Rebeca model that the accompanying
+ * smarthome-tc2step.statespace belongs to, reconstructed from the actor names,
+ * message-server names and delays visible in Afra's rendering of that export.
+ * The actor and message-server names are verbatim; the statement bodies are
+ * inferred from the timing and are marked where that is the case.
+ *
+ * What the export pins down exactly:
+ *   - four actors: room, sensor, controller, hc_unit
+ *   - message servers: TEMPCHANGE, GETTEMP, GETSENSE, ACTIVATEH, SWITCHOFF,
+ *     REGULATE, CARRIER_CHANGE_OF_TEMP
+ *   - the ten-unit period is spent as 7, then CARRIER_CHANGE_OF_TEMP, then 3,
+ *     which is what makes this model interesting: the same behaviour is
+ *     expressed elsewhere as a single ten-unit step.
+ */
+
+env int TEMP_LOW = 20;
+env int TEMP_HIGH = 21;
+
+reactiveclass Room(5) {
+    knownrebecs { Sensor sensor; }
+    statevars { int temp; int air; int reg; }
+
+    Room() {
+        temp = TEMP_HIGH;
+        air = 0;
+        reg = 0;
+        self.TEMPCHANGE();
+    }
+
+    msgsrv TEMPCHANGE() {
+        // non-deterministic ambient change: the export shows both successors
+        temp = ?(TEMP_LOW, TEMP_HIGH);
+        sensor.GETTEMP(temp);
+        self.CARRIER_CHANGE_OF_TEMP() after(7);   // first half of the period
+    }
+
+    msgsrv CARRIER_CHANGE_OF_TEMP() {
+        self.TEMPCHANGE() after(3);               // second half of the period
+    }
+
+    msgsrv REGULATE(int on) {
+        reg = on;
+    }
+}
+
+reactiveclass Sensor(5) {
+    knownrebecs { Controller controller; }
+    statevars { int sensed; }
+
+    msgsrv GETTEMP(int t) {
+        sensed = t;
+        controller.GETSENSE(sensed);
+    }
+}
+
+reactiveclass Controller(5) {
+    knownrebecs { HeaterCooler hc_unit; Room room; }
+    statevars { boolean active; int status; }
+
+    msgsrv GETSENSE(int t) {
+        status = t;
+        if (t <= TEMP_LOW && !active) {
+            active = true;
+            hc_unit.ACTIVATEH();
+        } else if (t >= TEMP_HIGH && active) {
+            active = false;
+            hc_unit.SWITCHOFF();
+        }
+    }
+}
+
+reactiveclass HeaterCooler(5) {
+    knownrebecs { Room room; }
+    statevars { boolean heater; }
+
+    msgsrv ACTIVATEH() {
+        heater = true;
+        room.REGULATE(1);
+    }
+
+    msgsrv SWITCHOFF() {
+        heater = false;
+        room.REGULATE(0);
+    }
+}
+
+main {
+    Room room(sensor):();
+    Sensor sensor(controller):();
+    Controller controller(hc_unit, room):();
+    HeaterCooler hc_unit(room):();
+}

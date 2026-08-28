@@ -1,0 +1,4 @@
+automaton action-a
+initial l0
+loc l0
+edge l0 -> l0 : a

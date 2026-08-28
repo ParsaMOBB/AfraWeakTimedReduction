@@ -1,0 +1,7 @@
+automaton tau-no-reset-a
+clock x
+initial l0
+loc l0
+loc l1
+edge l0 -> l1 : tau
+edge l1 -> l1 : a guard x >= 1

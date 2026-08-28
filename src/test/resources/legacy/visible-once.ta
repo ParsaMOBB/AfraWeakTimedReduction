@@ -1,0 +1,5 @@
+automaton visible-once
+initial l0
+loc l0
+loc l1
+edge l0 -> l1 : a

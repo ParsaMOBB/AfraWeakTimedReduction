@@ -1,0 +1,6 @@
+automaton unicode-tau-prefix-a
+initial l0
+loc l0
+loc l1
+edge l0 -> l1 : τ
+edge l1 -> l1 : a

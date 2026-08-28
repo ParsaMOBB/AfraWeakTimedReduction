@@ -1,0 +1,8 @@
+automaton tau-branch-a
+initial l0
+loc l0
+loc live
+loc dead
+edge l0 -> live : tau
+edge l0 -> dead : tau
+edge live -> live : a

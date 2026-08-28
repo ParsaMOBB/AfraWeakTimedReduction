@@ -1,0 +1,4 @@
+automaton bounded-at-two
+clock x
+initial l0
+loc l0 inv x <= 2

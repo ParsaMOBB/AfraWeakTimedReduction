@@ -1,0 +1,11 @@
+# id | modelA | modelB | expectedBisimilar
+tau-prefix-is-hidden              | tau-prefix-a          | visible-loop   | true
+tau-suffix-is-hidden              | tau-suffix-a          | visible-once   | true
+tau-loop-terminates               | tau-loop-a            | visible-loop   | true
+unicode-tau-is-hidden             | unicode-tau-prefix-a  | visible-loop   | true
+visible-action-mismatch           | action-a              | action-b       | false
+exact-integer-delay-mismatch      | action-at-one         | action-at-two  | false
+maximum-delay-mismatch            | bounded-at-two        | bounded-at-one | false
+tau-without-reset-preserves-time  | tau-no-reset-a        | action-at-one  | true
+hidden-reset-still-affects-timing | tau-reset-late-a      | action-at-one  | false
+tau-branch-to-deadlock-must-be-matched | tau-branch-a     | visible-loop   | false

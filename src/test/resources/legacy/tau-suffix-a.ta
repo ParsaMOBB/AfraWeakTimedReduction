@@ -1,0 +1,7 @@
+automaton tau-suffix-a
+initial l0
+loc l0
+loc l1
+loc l2
+edge l0 -> l1 : a
+edge l1 -> l2 : tau
