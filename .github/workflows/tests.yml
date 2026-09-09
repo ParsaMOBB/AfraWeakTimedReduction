@@ -25,7 +25,12 @@ jobs:
           cache: maven
 
       - name: Install Graphviz
-        run: sudo apt-get update && sudo apt-get install --yes graphviz
+        run: |
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=-
+          sudo apt-get install --yes --no-install-recommends graphviz
+          dot -V
 
       - name: Build and run unit tests
         run: mvn --batch-mode --no-transfer-progress clean package
