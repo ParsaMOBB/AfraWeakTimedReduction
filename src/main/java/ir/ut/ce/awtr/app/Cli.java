@@ -1,7 +1,9 @@
 package ir.ut.ce.awtr.app;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Map;
 
 import ir.ut.ce.awtr.afra.AfraStateSpaceSource;
 import ir.ut.ce.awtr.report.ArtifactWriter;
+import ir.ut.ce.awtr.report.StateSpaceDotWriter;
 import ir.ut.ce.awtr.source.ObservableSet;
 import ir.ut.ce.awtr.tts.InvalidModelException;
 import ir.ut.ce.awtr.weak.TimeSemantics;
@@ -28,6 +31,7 @@ import ir.ut.ce.awtr.weak.UnitDelayRefinement;
  * awtr reduce MODEL.statespace --observable getSense,activateh --output-dir DIR
  * awtr equivalent A.statespace B.statespace --observable getSense
  * awtr inspect MODEL.statespace
+ * awtr visualize MODEL.statespace --output MODEL.dot
  * }</pre>
  *
  * <p>Exit codes are part of the contract:
@@ -67,6 +71,7 @@ public final class Cli {
                 case "reduce" -> reduce(rest(args));
                 case "equivalent" -> equivalent(rest(args));
                 case "inspect" -> inspect(rest(args));
+                case "visualize" -> visualize(rest(args));
                 default -> {
                     err.println("unknown command '" + args[0] + "'");
                     usage(err);
@@ -153,6 +158,45 @@ public final class Cli {
         return EXIT_OK;
     }
 
+    private int visualize(Options options) {
+        Path input = options.requirePath(0, "MODEL.statespace");
+        var model = new AfraStateSpaceSource(
+                input, options.value("initial-state", null)).load();
+        String dot = new StateSpaceDotWriter().render(model);
+        String requestedOutput = options.value("output", null);
+
+        if ("-".equals(requestedOutput)) {
+            out.print(dot);
+            return EXIT_OK;
+        }
+
+        Path output = requestedOutput == null
+                ? replaceExtension(input, "dot")
+                : Path.of(requestedOutput);
+        try {
+            Path parent = output.toAbsolutePath().getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            Files.writeString(output, dot, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException("cannot write " + output, e);
+        }
+
+        out.println("model              " + model.id());
+        out.println("states             " + model.states().size());
+        out.println("transitions        " + model.transitions().size());
+        out.println("wrote              " + output);
+        return EXIT_OK;
+    }
+
+    private static Path replaceExtension(Path input, String extension) {
+        String name = input.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        String base = dot > 0 ? name.substring(0, dot) : name;
+        return input.resolveSibling(base + "." + extension);
+    }
+
     private static boolean isHelp(String token) {
         return "-h".equals(token) || "--help".equals(token) || "help".equals(token);
     }
@@ -181,6 +225,7 @@ public final class Cli {
                   awtr reduce MODEL.statespace --observable NAME[,NAME...] [options]
                   awtr equivalent A.statespace B.statespace --observable NAME[,NAME...] [options]
                   awtr inspect MODEL.statespace
+                  awtr visualize MODEL.statespace [--output FILE|-]
 
                 options
                   --observable NAME[,NAME...]  message servers to keep visible; every other
@@ -192,6 +237,7 @@ public final class Cli {
                                                through (default unit)
                   --max-intermediate-states N  cap on states added by unit refinement
                   --no-verify                  skip the independent quotient check
+                  --output FILE|-              visualization DOT path; '-' writes to stdout
 
                 exit codes
                   0 success   1 not equivalent / verification failed

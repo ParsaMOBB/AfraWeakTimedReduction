@@ -24,8 +24,18 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install --yes graphviz
+
       - name: Build and run unit tests
         run: mvn --batch-mode --no-transfer-progress clean package
 
       - name: Run end-to-end tests
         run: python3 tests/e2e/run_e2e.py
+
+      - name: Render visualization smoke test
+        run: |
+          java -jar target/awtr.jar visualize tests/e2e/models/tiny.statespace \
+            --output target/tiny.dot
+          dot -Tsvg target/tiny.dot -o target/tiny.svg
+          test -s target/tiny.svg

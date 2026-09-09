@@ -106,6 +106,13 @@ for a write-up that has to be traceable than the constant factor does.
 | `reduced.dot` | Graphviz, labelled the way Afra labels it |
 | `metrics.json` | every number a table in the write-up may cite |
 
+The separate `visualize` command renders the complete acquired `.statespace`
+model as deterministic DOT before hiding or reduction. `StateSpaceDotWriter`
+uses generated Graphviz node identifiers, so arbitrary Afra state IDs cannot
+break the graph, while node and edge labels preserve the source identifiers,
+atomic propositions, message-server identities, execution times and shifts.
+The command can write a file or stdout and has no dependency on the Afra GUI.
+
 The `.statespace` view is deliberately not the primary result. Afra's schema has
 one `sender` slot per transition, and a quotient edge may stand for several
 original message-server transitions with different senders; it also has nowhere

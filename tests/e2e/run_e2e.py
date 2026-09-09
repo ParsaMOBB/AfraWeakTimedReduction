@@ -113,9 +113,42 @@ def case_reducible_positive() -> None:
     shutil.rmtree(out, ignore_errors=True)
 
 
+def case_visualization() -> None:
+    """The packaged CLI renders a complete Afra state space without Afra."""
+    print("\n[2] headless Afra-style state-space visualization")
+    model = MODELS / "tiny.statespace"
+    out = Path(tempfile.mkdtemp(prefix="awtr-e2e-visualize-"))
+    output = out / "tiny.dot"
+
+    result = run(["visualize", str(model), "--output", str(output)])
+    check(result.returncode == EXIT_OK,
+          f"visualize exits 0 (got {result.returncode})")
+    check(output.is_file(), "visualize writes the requested DOT file")
+
+    dot = output.read_text()
+    lines = dot.splitlines()
+    nodes = [line for line in lines if line.startswith("  n") and " -> " not in line]
+    edges = [line for line in lines if " -> " in line]
+    check(dot.startswith("digraph statespace {") and dot.endswith("}\n"),
+          "output is a complete Graphviz graph")
+    check(len(nodes) == 6, f"all 6 states are drawn (got {len(nodes)})")
+    check(len(edges) == 7, f"all 7 transitions are drawn (got {len(edges)})")
+    check('label="p0", shape=doublecircle' in dot,
+          "the initial state is a double circle")
+    check('label="dev.poll\\n @0"' in dot,
+          "message-server owner and execution time are preserved")
+    check('label="time +=4\\n @0", style=bold, color=red' in dot,
+          "time transitions use Afra's red bold style")
+
+    stdout = run(["visualize", str(model), "--output", "-"])
+    check(stdout.returncode == EXIT_OK, "DOT can be written to standard output")
+    check(stdout.stdout == dot, "file and standard-output renderings are byte-identical")
+    shutil.rmtree(out, ignore_errors=True)
+
+
 def case_observable_set_changes_partition() -> None:
     """Hiding more of the model must merge more of it."""
-    print("\n[2] a different observable set gives a different partition")
+    print("\n[3] a different observable set gives a different partition")
     model = EVALUATION / "smarthome.statespace"
     with_three, out_a = reduce_model("obs3", model, "getSense,activateh,switchoff")
     with_one, out_b = reduce_model("obs1", model, "getSense")
@@ -144,7 +177,7 @@ def case_observable_set_changes_partition() -> None:
 
 def case_invalid_input() -> None:
     """Broken input must be refused with the invalid-input code, not a stack trace."""
-    print("\n[3] invalid input")
+    print("\n[4] invalid input")
     result, out = reduce_model("broken", MODELS / "broken.statespace", "poll")
     check(result.returncode == EXIT_INVALID_INPUT,
           f"exit code 2 for a dangling transition (got {result.returncode})")
@@ -162,7 +195,7 @@ def case_invalid_input() -> None:
 
 def case_semantic_mutation() -> None:
     """A mutated model must stop being equivalent to the original."""
-    print("\n[4] semantic mutation is detected")
+    print("\n[5] semantic mutation is detected")
     original = MODELS / "tiny.statespace"
     mutant = Path(tempfile.mkdtemp(prefix="awtr-e2e-mutant-")) / "tiny-mutant.statespace"
     mutant.write_text(original.read_text().replace('<time value="4"/>', '<time value="5"/>'))
@@ -181,7 +214,7 @@ def case_semantic_mutation() -> None:
 
 def case_time_semantics_is_selectable() -> None:
     """The time-additivity assumption has to be visible and switchable."""
-    print("\n[5] the time semantics is an explicit choice")
+    print("\n[6] the time semantics is an explicit choice")
     left = EVALUATION / "smarthome.statespace"
     right = EVALUATION / "smarthome-tc2step.statespace"
 
@@ -207,7 +240,7 @@ def case_time_semantics_is_selectable() -> None:
 
 def case_determinism() -> None:
     """Two runs must produce identical bytes."""
-    print("\n[6] output is reproducible")
+    print("\n[7] output is reproducible")
     model = MODELS / "tiny.statespace"
     first, out_a = reduce_model("det-a", model, "poll")
     second, out_b = reduce_model("det-b", model, "poll")
@@ -227,6 +260,7 @@ def main() -> int:
     print(f"driving: {' '.join(command)}")
 
     case_reducible_positive()
+    case_visualization()
     case_observable_set_changes_partition()
     case_invalid_input()
     case_semantic_mutation()

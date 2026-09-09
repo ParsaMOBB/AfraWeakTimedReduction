@@ -54,12 +54,13 @@ reading is implemented.
 | mutation tests the verifier must reject | `QuotientVerificationTest.Rejects` |
 | in-memory and file adapters agree | `AdapterContractTest` |
 | core independent of XML/CLI/Afra | `BoundaryTest` |
-| deterministic output | `AdapterContractTest.deterministicOutput`, E2E case 6 |
-| E2E from a packaged jar | `tests/e2e/run_e2e.py`, 52 checks |
+| deterministic output | `AdapterContractTest.deterministicOutput`, E2E case 7 |
+| complete `.statespace` visualization without Afra | `StateSpaceDotWriter`, `awtr visualize`; `StateSpaceDotWriterTest`, E2E case 2 |
+| E2E from a packaged jar | `tests/e2e/run_e2e.py`, 62 checks |
 | E2E: reducible positive with exact counts | E2E case 1 |
-| E2E: observable set changes the partition | E2E case 2 |
-| E2E: invalid input | E2E case 3 |
-| E2E: semantic mutation detected | E2E case 4 |
+| E2E: observable set changes the partition | E2E case 3 |
+| E2E: invalid input | E2E case 4 |
+| E2E: semantic mutation detected | E2E case 5 |
 | evaluation on 3+ models with raw results | `evaluation/run_evaluation.py` → `results.csv`, `raw/*/metrics.json` |
 
 ## Requirement to source

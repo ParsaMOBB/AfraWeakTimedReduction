@@ -25,8 +25,8 @@ Java 17 and Maven 3.9+ are required. Both are pinned to what the official Afra
 toolchain uses; see [docs/afra-integration.md](docs/afra-integration.md).
 
 ```bash
-mvn clean package                      # compiles, runs 104 unit tests, builds target/awtr.jar
-python3 tests/e2e/run_e2e.py           # 52 end-to-end checks against the packaged jar
+mvn clean package                      # compiles, runs 106 unit tests, builds target/awtr.jar
+python3 tests/e2e/run_e2e.py           # 62 end-to-end checks against the packaged jar
 python3 evaluation/run_evaluation.py   # regenerates evaluation/results.csv
 ```
 
@@ -40,6 +40,7 @@ diagrams.
 awtr reduce MODEL.statespace --observable NAME[,NAME...] [options]
 awtr equivalent A.statespace B.statespace --observable NAME[,NAME...] [options]
 awtr inspect MODEL.statespace
+awtr visualize MODEL.statespace [--output FILE|-]
 ```
 
 | option | meaning |
@@ -50,6 +51,7 @@ awtr inspect MODEL.statespace
 | `--time-semantics unit\|strict` | whether a `d`-unit delay may be observed part way through (default `unit`) |
 | `--max-intermediate-states N` | cap on states added by unit refinement |
 | `--no-verify` | skip the independent quotient check |
+| `--output FILE\|-` | visualization output path; `-` writes DOT to standard output |
 
 Exit codes: `0` success, `1` not equivalent or verification failed, `2` invalid
 input, `3` internal error.
@@ -69,6 +71,24 @@ message servers
   controller.getSense  (sender=)
   ...
 ```
+
+`visualize` is the headless counterpart of Afra's **ConvertToGraphviz** command.
+It reads a complete, reduced, or unterminated RMC `.statespace` export and writes
+deterministic Graphviz DOT without requiring Afra or any third-party Java
+dependency:
+
+```bash
+java -jar target/awtr.jar visualize model.statespace --output model.dot
+dot -Tpng model.dot -o model.png
+
+# Or stream directly into Graphviz:
+java -jar target/awtr.jar visualize model.statespace --output - \
+  | dot -Tsvg -o model.svg
+```
+
+The graph uses Afra's conventions: the initial state is a double circle,
+message-server edges show `owner.title`, execution time and shift are retained,
+and time-progress edges are bold red. Only the second command requires Graphviz.
 
 ## Output
 
