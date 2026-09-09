@@ -19,6 +19,40 @@ reduction          37.5% states, 33.3% transitions
 verification       relation is a weak timed bisimulation (34 pairs, 172 transfer checks)
 ```
 
+## Before and after
+
+<table>
+  <thead>
+    <tr>
+      <th width="50%">Original Afra-format state space</th>
+      <th width="50%">Verified weak-timed quotient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="50%" valign="top">
+        <a href="docs/images/smarthome-original.svg">
+          <img src="docs/images/smarthome-original.svg" width="100%" alt="Original 16-state SmartHome Afra-format transition system">
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <a href="docs/images/smarthome-reduced.svg">
+          <img src="docs/images/smarthome-reduced.svg" width="100%" alt="Reduced 10-state SmartHome weak-timed quotient">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">16 states · 18 transitions</td>
+      <td align="center">10 states · 12 transitions</td>
+    </tr>
+  </tbody>
+</table>
+
+Both diagrams come from `evaluation/models/smarthome.statespace`. The quotient
+keeps `getSense`, `activateh` and `switchoff` observable; every other interaction
+is hidden as `tau`. Red edges represent the passage of time. Click either image
+to open the full-size SVG.
+
 ## Build and test
 
 Java 17 and Maven 3.9+ are required. Both are pinned to what the official Afra
