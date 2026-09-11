@@ -5,9 +5,9 @@ Offline helper, not part of the application. It exists so the evaluation and
 end-to-end suites can be driven from the same reviewable text fixtures the unit
 tests use, while still exercising the production XML reader.
 
-The output reproduces the byte shape the RMC-generated model checker emits,
-including the fact that the root element is opened and never closed. See
-docs/afra-input-contract.md for where each of those details comes from.
+The output deliberately leaves the root element open, reproducing an
+interrupted streaming export and exercising the production reader's tolerant
+end-tag handling. See docs/afra-input-contract.md.
 
 Usage:
     tts_to_statespace.py INPUT.tts OUTPUT.statespace
@@ -77,7 +77,7 @@ def render(states, edges) -> str:
             out.append(f"{head}</transition>")
         else:
             raise SystemExit(f"unrecognised label {label!r}")
-    # No closing tag: a genuine RMC export does not have one.
+    # No closing tag: intentionally exercise interrupted-stream compatibility.
     return "\n".join(out) + "\n"
 
 

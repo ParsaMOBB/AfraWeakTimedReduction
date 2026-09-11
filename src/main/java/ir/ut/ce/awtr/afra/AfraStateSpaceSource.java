@@ -41,10 +41,10 @@ import ir.ut.ce.awtr.tts.InvalidModelException;
  *
  * <p>Two properties of that stream drive this implementation.
  *
- * <p><b>The root element is never closed.</b> RMC opens
- * {@code <transitionsystem>} when it stores the initial state and simply closes
- * the file when the search ends, so a genuine export is not well-formed XML. A
- * synthetic end tag is appended when the document does not already carry one.
+ * <p><b>The root may be unterminated.</b> Current RMC versions write
+ * {@code </transitionsystem>} after a normal search, but an interrupted
+ * streaming export and some historical fixtures may lack it. A synthetic end
+ * tag is appended only when the document does not already carry one.
  *
  * <p><b>The initial state is the first {@code <state>} written.</b> RMC emits it
  * from {@code storeInitialState()} before any transition, and assigns it

@@ -1,0 +1,170 @@
+<transitionsystem>
+<state id="1_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">0</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+			<message arrival="0" deadline="infinity" sender="teacher">teach()</message>
+		</queue>
+		<now>0</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>0</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<state id="2_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">1</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>0</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+			<message arrival="2" deadline="infinity" sender="teacher">learn(1)</message>
+		</queue>
+		<now>0</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<state id="3_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">1</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+			<message arrival="2" deadline="infinity" sender="teacher">learn(1)</message>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<transition source="2_0" destination="3_0" executionTime="0" shift="0"> <time value="2"/></transition>
+<transition source="1_0" destination="2_0" executionTime="0" shift="0"> <messageserver sender="teacher" owner="teacher" title="TEACH"/></transition>
+<state id="4_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">1</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+			<message arrival="2" deadline="infinity" sender="student">teach()</message>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<transition source="3_0" destination="4_0" executionTime="2" shift="0"> <messageserver sender="teacher" owner="student" title="LEARN"/></transition>
+<state id="5_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">0</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+			<message arrival="4" deadline="infinity" sender="teacher">learn(0)</message>
+		</queue>
+		<now>2</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<state id="6_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">0</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>4</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+			<message arrival="4" deadline="infinity" sender="teacher">learn(0)</message>
+		</queue>
+		<now>4</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<transition source="5_0" destination="6_0" executionTime="2" shift="0"> <time value="2"/></transition>
+<transition source="4_0" destination="5_0" executionTime="2" shift="0"> <messageserver sender="student" owner="teacher" title="TEACH"/></transition>
+<state id="7_0" atomicpropositions="" >
+	<rebec name="teacher">
+		<statevariables>
+			<variable name="Teacher.lessonLevel" type="int">0</variable>
+			<variable name="Teacher.wand" type="int">0</variable>
+		</statevariables>
+		<queue>
+			<message arrival="4" deadline="infinity" sender="student">teach()</message>
+		</queue>
+		<now>4</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+	<rebec name="student">
+		<statevariables>
+		</statevariables>
+		<queue>
+		</queue>
+		<now>4</now>
+		<pc></pc>
+		<res></res>
+	</rebec>
+</state>
+<transition source="6_0" destination="7_0" executionTime="4" shift="0"> <messageserver sender="teacher" owner="student" title="LEARN"/></transition>
+<transition source="7_0" destination="2_0" executionTime="4" shift="4"> <messageserver sender="student" owner="teacher" title="TEACH"/></transition>
+</transitionsystem>

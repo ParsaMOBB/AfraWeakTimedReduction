@@ -17,20 +17,23 @@ as a diagnostic comparison with the literal single-edge pseudocode.
 
 ## Remaining provenance questions
 
-### 2. The committed Afra export is a back-transcription
+### 2. The Case II SmartHome export is still a back-transcription
 
 `src/test/resources/afra/smarthome-tc2step.statespace` reproduces a genuine
 Afra/RMC export field by field, recovered from Afra's own Graphviz rendering of
-it, in the byte format the RMC emitter produces. It was not copied out of a
-running Afra installation, because no `.statespace` file was available to this
-project and the Afra installer in the workspace was out of scope.
+it, in the byte format the RMC emitter produces. The original SmartHome Rebeca
+source was not available, so this specific Case II export could not be
+regenerated.
 
 Two fields Afra's renderer does not print — `messageserver/@sender` and
 `state/@atomicpropositions` — are recorded as empty. Neither affects this tool's
 semantics. `src/test/resources/afra/README.md` gives the exact steps to replace
-the file with a first-party export; until that is done, the acceptance criterion
-"one small, real, unmodified TTS export produced by an official Afra/RMC
-toolchain" is met in format and content but not in provenance.
+the file with a first-party export.
+
+The broader provenance gap is closed: seven real, unmodified TTS exports from
+RMC 2.14 are committed under `src/test/resources/rebeca-generated/`, loaded by
+the production reader, and compared by `GeneratedRebecaModelsTest`. They do not,
+however, establish the provenance of the separate SmartHome diagram.
 
 ### 3. The originating Rebeca model is reconstructed
 
@@ -111,5 +114,6 @@ exercised against a real export containing them, because none was available.
 
 ## Not attempted
 
-Strong timed bisimilarity, dense time, the Afra plug-in, and any Rebeca source
-compilation. All are outside this phase by `Instruction.md`.
+Strong timed bisimilarity, dense time, and the Afra plug-in. Rebeca source
+compilation exists only as the offline `tools/rebeca_to_statespace.py` workflow;
+it is not linked into the `awtr` runtime.

@@ -19,8 +19,8 @@ interaction the user did not ask to observe, computes the partition of the
 states into **weak timed bisimilarity** classes over discrete time, and emits the
 quotient transition system together with a metrics report. Every reduction is
 checked on the way out by a verifier written independently of the reducer. It
-lives in `IndependentAfraWeakTimedReduction/`, is 3,620 lines of main code and
-2,290 of test, has **no runtime dependencies outside the JDK**, and passes 112
+lives in `IndependentAfraWeakTimedReduction/`, is 3,624 lines of main code and
+2,362 of test, has **no runtime dependencies outside the JDK**, and passes 116
 unit tests plus 62 end-to-end checks.
 
 ---
@@ -54,6 +54,8 @@ them before you start editing, or you will lose them.
 | `docs/semantics.md` | the discrete weak timed semantics as implemented — **the intellectual core** |
 | `docs/afra-input-contract.md` | the `.statespace` dialect, derived from official sources |
 | `docs/afra-integration.md` | toolchain compatibility, the future in-process adapter |
+| `docs/rebeca-generation.md` | reproducible headless Rebeca → RMC → TTS `.statespace` workflow |
+| `docs/rebeca-visualizations.md` | Afra-rendered TTS gallery for all generated example models |
 | `docs/design.md` | architecture and the reasoning behind each decision |
 | `docs/case-ii-provenance.md` | how the three diagrams became test fixtures |
 | `docs/traceability.md` | pseudocode step → code → test, and criterion → where met |
@@ -63,11 +65,14 @@ them before you start editing, or you will lose them.
 | `src/test/resources/legacy/` | the ten recorded acceptance cases + `manifest.txt` |
 | `src/test/resources/afra/` | the Afra export fixture + its provenance note + the Rebeca model |
 | `src/test/resources/readme/` | the three `.statespace` models displayed and compared in the README |
+| `src/test/resources/rebeca-generated/` | seven unmodified RMC 2.14 exports used as integration fixtures |
 | `evaluation/results.csv` | **the only place thesis numbers may come from** |
 | `evaluation/raw/<case>/` | per-run `metrics.json`, `reduced.dot`, `reduced.json`, `partition.json` |
 | `evaluation/environment.json` | OS, CPU, JVM, timestamp of the recorded run |
 | `tests/e2e/run_e2e.py` | the end-to-end suite |
 | `tools/tts_to_statespace.py` | offline fixture → Afra-format converter |
+| `tools/rebeca_to_statespace.py` | headless wrapper around the RMC/C++ state-space generator |
+| `tools/afra_visualize.py` | wrapper around Afra's official state-space-to-Graphviz transformer |
 
 ---
 
@@ -170,11 +175,11 @@ see §8.
 
 ### Test totals
 
-112 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
+116 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
 Breakdown: legacy baseline 21, Case II 12, specification-level semantics 24,
 quotient soundness incl. 5 mutation rejections 23, Afra reader incl. 8 rejection
 cases 17, architecture + adapter contract 8, state identifier validation 3,
-visualization 3, README timed-example fixtures 1.
+visualization 3, README timed-example fixtures 1, generated Rebeca models 4.
 
 ### Toolchain
 
@@ -298,7 +303,7 @@ misleading.
 
 ```bash
 cd IndependentAfraWeakTimedReduction
-mvn clean package                      # expect: 112 tests, 0 failures/errors/skipped
+mvn clean package                      # expect: 116 tests, 0 failures/errors/skipped
 python3 tests/e2e/run_e2e.py           # expect: 62/62 checks passed
 python3 evaluation/run_evaluation.py   # rewrites evaluation/results.csv + raw/
 git rev-parse HEAD                     # the commit to cite
@@ -348,9 +353,9 @@ Durations are in ℕ.
 
 ## 11. Gotchas that will cost you an afternoon
 
-* **A genuine Afra export is not well-formed XML.** RMC opens
-  `<transitionsystem>` and never closes it. If you open one in an XML viewer it
-  will look corrupt. It is not. This is worth a sentence in Chapter 4.
+* **A state-space stream may be incomplete XML.** RMC 2.14 closes
+  `<transitionsystem>` after a normal run, as the seven generated fixtures show.
+  An interrupted stream may lack the final tag; the reader accepts both forms.
 * **Observable matching is case sensitive.** The Case II diagrams were rendered
   by two different Afra versions, one uppercase (`GETSENSE`) and one lowercase
   (`getsense`). The transcriptions normalise to the owner's canonical spelling;
@@ -371,7 +376,8 @@ Durations are in ℕ.
 ## 12. What was deliberately not built
 
 Strong timed bisimilarity; dense time and the virtual-clock/DBM machinery of
-arXiv:2412.15799; Rebeca source compilation; the Afra plug-in; a GUI; a LaTeX/TikZ
-exporter. The first two are the natural "related work" contrast for Chapter 2;
-the plug-in is the natural "future work" for Chapter 6, and `docs/afra-integration.md`
-already specifies the seam it would attach to.
+arXiv:2412.15799; an in-process Rebeca compiler; the Afra plug-in; a GUI; a
+LaTeX/TikZ exporter. Rebeca-to-state-space generation is instead an offline
+RMC workflow. The first two are the natural "related work" contrast for Chapter
+2; the plug-in is the natural "future work" for Chapter 6, and
+`docs/afra-integration.md` already specifies the seam it would attach to.

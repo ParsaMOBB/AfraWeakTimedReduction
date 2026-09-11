@@ -1,0 +1,16 @@
+digraph html {
+S1_0[label="S1_0: \n "];
+S2_0[label="S2_0: \n "];
+S3_0[label="S3_0: \n "];
+S2_0 -> S3_0[label="time +=2 \n @0", style="bold", color="red"];
+S1_0 -> S2_0[label="teacher.TEACH \n @0"];
+S4_0[label="S4_0: \n "];
+S3_0 -> S4_0[label="student.LEARN \n @2"];
+S5_0[label="S5_0: \n "];
+S6_0[label="S6_0: \n "];
+S5_0 -> S6_0[label="time +=2 \n @2", style="bold", color="red"];
+S4_0 -> S5_0[label="teacher.TEACH \n @2"];
+S7_0[label="S7_0: \n "];
+S6_0 -> S7_0[label="student.LEARN \n @4"];
+S7_0 -> S2_0[label="teacher.TEACH \n @4 -> shift(+4)"];
+}

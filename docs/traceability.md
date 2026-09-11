@@ -27,7 +27,7 @@ reading is implemented.
 
 | contract rule | implementation | test |
 | --- | --- | --- |
-| root `<transitionsystem>`, never closed | `afra/AfraStateSpaceSource.openTolerantly` | `acceptsUnterminatedRoot`, `acceptsClosedRoot` |
+| normal exports are closed; interrupted streams may not be | `afra/AfraStateSpaceSource.openTolerantly` | `acceptsUnterminatedRoot`, `acceptsClosedRoot`, `GeneratedRebecaModelsTest` |
 | initial state is the first `<state>` | `source/RawTransitionSystem.Builder.state` | `CommittedExport.initialStateIsTheFirstOne` |
 | `--initial-state` override | `AfraStateSpaceSource(path, override)` | `initialStateOverride` |
 | action identity is `title`, optionally `owner.title` | `source/ObservableSet.observableNameOf` | `CommittedExport.actionsMatchTheExport`, E2E case 5 |

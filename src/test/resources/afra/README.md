@@ -44,10 +44,10 @@ Neither affects this tool's semantics: the reducer's action identity is
 `StateSpaceAnalysis` loader uses, and atomic propositions are carried as
 provenance only.
 
-**Byte format.** The file reproduces the emitter's output exactly, including the
-fact that RMC opens `<transitionsystem>` in `storeInitialState()` and never
-writes a closing tag — a genuine export is not well-formed XML. The parser under
-test has to tolerate that, so the fixture must not "fix" it.
+**Byte format.** This reconstructed fixture intentionally has no closing root
+tag, preserving the historical/interrupted stream shape used when it was
+created. RMC 2.14 does write `</transitionsystem>` after a normal run. The parser
+accepts both, so this fixture must remain unterminated to retain that coverage.
 
 ## Replacing this with a first-party export
 
@@ -60,13 +60,13 @@ To regenerate this fixture from Afra directly:
    writes `statespace.xml` next to the report, or to the path given by `-x`;
 4. copy that file here and delete this note's "back-transcription" caveat.
 
-Until step 4 is done, the acceptance criterion "one small, real, unmodified TTS
-export produced by an official Afra/RMC toolchain" is met in format and content
-but not in provenance. That gap is listed in `docs/limitations.md`.
+The seven fixtures in `src/test/resources/rebeca-generated/` now satisfy the
+general first-party-export criterion. This particular Case II file remains a
+back-transcription until the original SmartHome source can be regenerated.
 
 ## Originating model
 
 `smarthome-tc2step.rebeca` records the Timed Rebeca model this state space
 belongs to, reconstructed from the actor names, message-server names and timing
-visible in the export. It is documentation, not an input to any test: nothing in
-this repository compiles Rebeca source.
+visible in the export. It is documentation rather than the source that generated
+this particular fixture.

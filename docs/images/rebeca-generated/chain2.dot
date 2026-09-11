@@ -1,0 +1,24 @@
+digraph html {
+S1_0[label="S1_0: \n "];
+S2_0[label="S2_0: \n "];
+S3_0[label="S3_0: \n "];
+S2_0 -> S3_0[label="time +=2 \n @0", style="bold", color="red"];
+S1_0 -> S2_0[label="controller.START \n @0"];
+S4_0[label="S4_0: \n "];
+S5_0[label="S5_0: \n "];
+S4_0 -> S5_0[label="time +=3 \n @2", style="bold", color="red"];
+S3_0 -> S4_0[label="worker.DECIDE \n @2"];
+S6_0[label="S6_0: \n "];
+S7_0[label="S7_0: \n "];
+S6_0 -> S7_0[label="time +=6 \n @2", style="bold", color="red"];
+S3_0 -> S6_0[label="worker.DECIDE \n @2"];
+S8_0[label="S8_0: \n "];
+S9_0[label="S9_0: \n "];
+S8_0 -> S9_0[label="time +=4 \n @5", style="bold", color="red"];
+S5_0 -> S8_0[label="controller.APPROVED \n @5"];
+S10_0[label="S10_0: \n "];
+S10_0 -> S3_0[label="time +=4 \n @8 -> shift(+10)", style="bold", color="red"];
+S7_0 -> S10_0[label="controller.REJECTED \n @8"];
+S9_0 -> S4_0[label="worker.DECIDE \n @9 -> shift(+7)"];
+S9_0 -> S6_0[label="worker.DECIDE \n @9 -> shift(+7)"];
+}

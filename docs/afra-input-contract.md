@@ -1,18 +1,19 @@
 # The Afra TTS `.statespace` contract
 
 Everything below was established from official Rebeca/Afra sources at the exact
-revisions named here, and from one export produced by that toolchain. Nothing in
-this document was copied from any other local project.
+revisions named here and from seven exports produced by the bundled RMC 2.14
+toolchain. Nothing in this document was copied from any other local project.
 
 ## Sources consulted
 
 | what | repository | revision | file |
 | --- | --- | --- | --- |
-| the emitter | `rebeca-lang/org.rebecalang.rmc` | `cab60b1a7d321ac045b7722603642ec5674d6a51` | `src/main/resources/vtl/timedrebeca/analyzer/TTSPatchTemplate.vm`, `.../FTTSPatchTemplate.vm`, `src/main/resources/vtl/timedrebeca/analyzer/AbstractTimedRebecaAnalyzerCPPTemplate.vm`, `src/main/resources/vtl/common/AtomicPropositionsDefinitionTemplate.vm`, `src/main/resources/vtl/timedrebeca/MainPatch.vm` |
+| the emitter | `rebeca-lang/org.rebecalang.rmc` | `cab60b1a7d321ac045b7722603642ec5674d6a51` | `src/main/resources/vtl/timedrebeca/analyzer/TTSPatchTemplate.vm`, `.../FTTSPatchTemplate.vm`, `.../TimedModelCheckerCPPTemplate.vm`, `src/main/resources/vtl/timedrebeca/analyzer/AbstractTimedRebecaAnalyzerCPPTemplate.vm`, `src/main/resources/vtl/common/AtomicPropositionsDefinitionTemplate.vm`, `src/main/resources/vtl/timedrebeca/MainPatch.vm` |
 | the schema | `rebeca-lang/org.rebecalang.afra` | `ed3caf62b1aa019f718e3c0e0b1da325e87ee719` | `org.rebecalang.afra.ideplugin/src/.../counterexample/transition.xsd` |
 | reader #1 (rendering) | `rebeca-lang/org.rebecalang.statespacetransformer` | `02fbef19475f81b2bad3f6dc7bc3491850eb5dfa` | `graphviz/CoreRebecaStateSpaceGraphviz.java`, `graphviz/TimedRebecaStateSpaceGraphviz.java`, `StateSpaceTransformer.java` |
 | reader #2 (analysis) | `rebeca-lang/org.rebecalang.statespaceanalysis` | `b2b0e236df2f7e3cadee5303eca61096de4de4ef` | `statespace/StateSpaceLoader.java` |
-| the export | `src/test/resources/afra/smarthome-tc2step.statespace` | — | see that directory's `README.md` for its provenance |
+| generated exports | `src/test/resources/rebeca-generated/*.statespace` | RMC 2.14 / compiler 2.30 | see `docs/rebeca-generation.md` |
+| reconstructed Case II export | `src/test/resources/afra/smarthome-tc2step.statespace` | — | see that directory's `README.md` for its provenance |
 
 Two independent official readers exist, and they agree with the emitter. Where
 this document states a rule, at least two of the three sources support it.
@@ -27,19 +28,24 @@ this document states a rule, at least two of the three sources support it.
 </state>
 <transition source="1_0" destination="2_0" executionTime="0" shift="0"> <messageserver sender="room" owner="sensor" title="GETTEMP"/></transition>
 <transition source="2_0" destination="3_0" executionTime="0" shift="0"> <time value="7"/></transition>
+</transitionsystem>
 ```
 
 ## Rules
 
-### The root element is opened and never closed
+### Normal exports are closed; interrupted streams may be unterminated
 
 `TTSPatchTemplate.vm` writes `<transitionsystem>` from `storeInitialState()`.
-No template writes `</transitionsystem>`; `MainPatch.vm` simply opens the stream
-and lets the process end. **A genuine export is therefore not well-formed XML.**
+In RMC 2.14, `TimedModelCheckerCPPTemplate.vm` writes the matching end tag when
+model checking finishes normally (and in its segmentation-fault handler). All
+seven first-party fixtures generated for this project are therefore well-formed
+XML.
 
-`AfraStateSpaceSource` scans the tail of the file and appends a synthetic end
-tag when one is missing. This is the single most important compatibility
-detail: a strict parser rejects real Afra output.
+Because state-space XML is streamed during exploration, interruption before
+that finalisation can still leave a useful but unterminated file. Historical
+fixtures in this repository also have that shape. `AfraStateSpaceSource` scans
+the tail and appends a synthetic end tag only when one is missing, so both forms
+are accepted.
 
 ### The initial state is the first `<state>` in document order
 
