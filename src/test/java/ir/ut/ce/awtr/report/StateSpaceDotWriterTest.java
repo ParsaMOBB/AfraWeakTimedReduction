@@ -1,6 +1,7 @@
 package ir.ut.ce.awtr.report;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,20 @@ class StateSpaceDotWriterTest {
         assertTrue(first.contains("line \\\"2"));
         assertTrue(first.contains("owner.say\\\"hi"));
         assertTrue(first.endsWith("}\n"));
+    }
+
+    @Test
+    void rendersAnUnqualifiedIllustrativeActionWithoutALeadingDot() {
+        RawTransitionSystem model = RawTransitionSystem.builder("illustrative.statespace")
+                .state("s0", "")
+                .state("s1", "")
+                .transition(RawTransition.message("s0", "s1",
+                        new ActionIdentity("", "", "a"), null, null))
+                .build();
+
+        String dot = new StateSpaceDotWriter().render(model);
+
+        assertTrue(dot.contains("label=\"a\""));
+        assertFalse(dot.contains("label=\".a\""));
     }
 }

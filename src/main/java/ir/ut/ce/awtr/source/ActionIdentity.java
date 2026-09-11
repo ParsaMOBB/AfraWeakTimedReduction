@@ -10,9 +10,10 @@ import java.util.Objects;
  * emitter in {@code org.rebecalang.rmc}, which writes
  * {@code <messageserver sender="..." owner="..." title="..."/>}.
  *
- * <p>Afra's own Graphviz transformer renders such a transition as
+ * <p>Afra's own Graphviz transformer renders ordinary exports as
  * {@code owner + "." + title} and ignores {@code sender}; {@link #qualifiedName()}
- * reproduces that convention exactly.
+ * follows that convention while avoiding a leading dot for minimal
+ * illustrative inputs whose owner is empty.
  */
 public record ActionIdentity(String sender, String owner, String title) {
 
@@ -28,9 +29,12 @@ public record ActionIdentity(String sender, String owner, String title) {
         Objects.requireNonNull(title, "title");
     }
 
-    /** {@code owner.title} — the identity Afra itself displays. */
+    /**
+     * {@code owner.title} — or just {@code title} when an illustrative input
+     * has no owner.
+     */
     public String qualifiedName() {
-        return owner + "." + title;
+        return owner.isEmpty() ? title : owner + "." + title;
     }
 
     /**

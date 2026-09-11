@@ -59,7 +59,7 @@ Java 17 and Maven 3.9+ are required. Both are pinned to what the official Afra
 toolchain uses; see [docs/afra-integration.md](docs/afra-integration.md).
 
 ```bash
-mvn clean package                      # compiles, runs 109 unit tests, builds target/awtr.jar
+mvn clean package                      # compiles, runs 112 unit tests, builds target/awtr.jar
 python3 tests/e2e/run_e2e.py           # 62 end-to-end checks against the packaged jar
 python3 evaluation/run_evaluation.py   # regenerates evaluation/results.csv
 ```
@@ -184,6 +184,58 @@ interrupted run are accumulated. **That run-based semantics is the `unit`
 default.**
 `--time-semantics strict` is retained only as a diagnostic implementation of the
 literal single-edge reading, with a test asserting the oracle fails under it.
+
+### Internal actions and observable time
+
+The following three systems make the observation rule concrete. The black edge
+labelled `a` is observable, the black edge labelled `tau` is internal, and red
+edges carry exact delays.
+
+```text
+TTS 1: s0 -a-> s1 -2-> s2 -tau-> s3 -8-> s4
+TTS 2: s0 -a-> s1 -10-> s2
+TTS 3: s0 -5-> s1 -a-> s2 -5-> s3
+```
+
+In this compact notation, `-d->` means that exactly `d` time units pass.
+
+<table>
+  <tbody>
+    <tr>
+      <th width="12%">TTS 1</th>
+      <td><a href="docs/images/observable-then-split-delay.svg"><img src="docs/images/observable-then-split-delay.svg" width="100%" alt="TTS 1: action a, delay 2, tau, delay 8"></a></td>
+    </tr>
+    <tr>
+      <th>TTS 2</th>
+      <td><a href="docs/images/observable-then-delay.svg"><img src="docs/images/observable-then-delay.svg" width="62%" alt="TTS 2: action a followed by delay 10"></a></td>
+    </tr>
+    <tr>
+      <th>TTS 3</th>
+      <td><a href="docs/images/delay-observable-delay.svg"><img src="docs/images/delay-observable-delay.svg" width="78%" alt="TTS 3: delay 5, action a, delay 5"></a></td>
+    </tr>
+  </tbody>
+</table>
+
+For each diagram, `awtr visualize` reads the corresponding `.statespace`
+fixture in `src/test/resources/readme/` and generates DOT, which Graphviz renders
+as SVG. Those same files drive `ReadmeTimedExampleTest`, so the displayed models
+and the asserted equivalence results have a single source of truth. The
+lower-level in-memory version remains in `WeakTimedSemanticsTest` to test the
+semantic core without the file parser.
+
+In TTS 1, `a` happens immediately and is followed by `2 + tau + 8` time units.
+In TTS 2, the same observable action happens immediately and is followed by one
+10-unit delay. The internal `tau` is not observable and does not reset elapsed
+time, so both systems expose the same timed behaviour: `a` at time 0, followed
+by ten units without another observable action. They are weak timed bisimilar
+under the default `unit` semantics.
+
+TTS 3 also has a run lasting ten units, but its observable action occurs only
+after five units. Hiding applies to internal actions, not to the time at which
+an observable action occurs. An observer can therefore distinguish `a` at time
+0 from `a` at time 5, so TTS 3 is not weak timed bisimilar to either TTS 1 or
+TTS 2. `WeakTimedSemanticsTest.observableActionTimingDistinguishesRuns` pins
+down all three pairwise results.
 
 See [docs/semantics.md](docs/semantics.md).
 

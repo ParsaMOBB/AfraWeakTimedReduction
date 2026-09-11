@@ -1,0 +1,7 @@
+<transitionsystem>
+<state id="s0" atomicpropositions=""></state>
+<state id="s1" atomicpropositions=""></state>
+<state id="s2" atomicpropositions=""></state>
+<transition source="s0" destination="s1"><messageserver sender="" owner="" title="a"/></transition>
+<transition source="s1" destination="s2"><time value="10"/></transition>
+</transitionsystem>

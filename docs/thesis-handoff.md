@@ -19,8 +19,8 @@ interaction the user did not ask to observe, computes the partition of the
 states into **weak timed bisimilarity** classes over discrete time, and emits the
 quotient transition system together with a metrics report. Every reduction is
 checked on the way out by a verifier written independently of the reducer. It
-lives in `IndependentAfraWeakTimedReduction/`, is 3,618 lines of main code and
-2,192 of test, has **no runtime dependencies outside the JDK**, and passes 109
+lives in `IndependentAfraWeakTimedReduction/`, is 3,620 lines of main code and
+2,290 of test, has **no runtime dependencies outside the JDK**, and passes 112
 unit tests plus 62 end-to-end checks.
 
 ---
@@ -62,6 +62,7 @@ them before you start editing, or you will lose them.
 | `src/test/resources/caseii/*.tts` | the transcribed Case II systems, one edge per line |
 | `src/test/resources/legacy/` | the ten recorded acceptance cases + `manifest.txt` |
 | `src/test/resources/afra/` | the Afra export fixture + its provenance note + the Rebeca model |
+| `src/test/resources/readme/` | the three `.statespace` models displayed and compared in the README |
 | `evaluation/results.csv` | **the only place thesis numbers may come from** |
 | `evaluation/raw/<case>/` | per-run `metrics.json`, `reduced.dot`, `reduced.json`, `partition.json` |
 | `evaluation/environment.json` | OS, CPU, JVM, timestamp of the recorded run |
@@ -169,11 +170,11 @@ see §8.
 
 ### Test totals
 
-109 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
-Breakdown: legacy baseline 21, Case II 12, specification-level semantics 23,
+112 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
+Breakdown: legacy baseline 21, Case II 12, specification-level semantics 24,
 quotient soundness incl. 5 mutation rejections 23, Afra reader incl. 8 rejection
 cases 17, architecture + adapter contract 8, state identifier validation 3,
-visualization 2.
+visualization 3, README timed-example fixtures 1.
 
 ### Toolchain
 
@@ -297,7 +298,7 @@ misleading.
 
 ```bash
 cd IndependentAfraWeakTimedReduction
-mvn clean package                      # expect: 109 tests, 0 failures/errors/skipped
+mvn clean package                      # expect: 112 tests, 0 failures/errors/skipped
 python3 tests/e2e/run_e2e.py           # expect: 62/62 checks passed
 python3 evaluation/run_evaluation.py   # rewrites evaluation/results.csv + raw/
 git rev-parse HEAD                     # the commit to cite

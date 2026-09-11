@@ -254,6 +254,36 @@ class WeakTimedSemanticsTest {
         }
 
         @Test
+        @DisplayName("tau placement is hidden but observable-action timing is preserved")
+        void observableActionTimingDistinguishesRuns() {
+            TransitionSystem first = TransitionSystem.builder("a+2+tau+8")
+                    .initialState("s0").state("s1").state("s2").state("s3").state("s4")
+                    .transition("s0", A, "s1")
+                    .transition("s1", Label.delay(2), "s2")
+                    .transition("s2", Label.TAU, "s3")
+                    .transition("s3", Label.delay(8), "s4")
+                    .build();
+            TransitionSystem second = TransitionSystem.builder("a+10")
+                    .initialState("s0").state("s1").state("s2")
+                    .transition("s0", A, "s1")
+                    .transition("s1", Label.delay(10), "s2")
+                    .build();
+            TransitionSystem third = TransitionSystem.builder("5+a+5")
+                    .initialState("s0").state("s1").state("s2").state("s3")
+                    .transition("s0", Label.delay(5), "s1")
+                    .transition("s1", A, "s2")
+                    .transition("s2", Label.delay(5), "s3")
+                    .build();
+
+            assertTrue(bisimilar(first, second, TimeSemantics.UNIT_ADDITIVE),
+                    "tau does not split the ten-unit delay after observable action a");
+            assertFalse(bisimilar(first, third, TimeSemantics.UNIT_ADDITIVE),
+                    "the observer can distinguish a at time 0 from a at time 5");
+            assertFalse(bisimilar(second, third, TimeSemantics.UNIT_ADDITIVE),
+                    "equal total run duration does not hide when a occurs");
+        }
+
+        @Test
         @DisplayName("a zero-duration time step is an internal step, not a delay")
         void zeroDelayIsTau() {
             assertThrows(IllegalArgumentException.class, () -> Label.delay(0));
