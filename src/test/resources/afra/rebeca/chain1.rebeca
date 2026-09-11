@@ -1,0 +1,52 @@
+//observable: worker.DECIDE,controller.APPROVED,controller.REJECTED
+reactiveclass Controller(2){
+knownrebecs{
+Worker worker;
+}
+Controller(){
+self.start();
+}
+msgsrv start(){
+worker.prepare()after(1);
+}
+msgsrv forwardDecision(){
+worker.decide()after(1);
+}
+msgsrv approved(){
+worker.complete()after(1);
+}
+msgsrv rejected(){
+worker.complete()after(1);
+}
+msgsrv restart(){
+worker.prepare()after(1);
+}
+}
+reactiveclass Worker(2){
+knownrebecs{
+Controller controller;
+}
+statevars{
+boolean choice;
+}
+Worker(){
+}
+msgsrv prepare(){
+controller.forwardDecision();
+}
+msgsrv decide(){
+choice=?(true, false);
+if (choice){
+controller.approved()after(3);
+} else {
+controller.rejected()after(6);
+}
+}
+msgsrv complete(){
+controller.restart()after(1);
+}
+}
+main{
+Controller controller(worker):();
+Worker worker(controller):();
+}

@@ -1,8 +1,8 @@
 # RMC-generated Timed Rebeca fixtures
 
 These seven files are unmodified TTS state-space exports generated from the
-models in `../Examples/models/` (relative to the workspace root) by the command
-documented in `docs/rebeca-generation.md`.
+committed models in `src/test/resources/afra/rebeca/` by the command documented
+in `docs/rebeca-generation.md`.
 
 Generator provenance:
 

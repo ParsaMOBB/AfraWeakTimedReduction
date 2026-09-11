@@ -1,0 +1,33 @@
+//observable: mood.LAUGH,mood.CRY
+reactiveclass MoodSystem(2){
+statevars{
+boolean happyBranch;
+}
+MoodSystem(){
+happyBranch= false;
+self.start();
+}
+msgsrv start(){
+happyBranch=?(true, false);
+if (happyBranch){
+self.happiness() after(2);
+} else {
+self.sadness() after(3);
+}
+}
+msgsrv happiness(){
+self.laugh() after(3);
+}
+msgsrv laugh(){
+self.start();
+}
+msgsrv sadness(){
+self.cry() after(5);
+}
+msgsrv cry(){
+self.start();
+}
+}
+main{
+MoodSystem mood():();
+}

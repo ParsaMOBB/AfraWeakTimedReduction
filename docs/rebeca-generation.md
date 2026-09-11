@@ -36,10 +36,16 @@ Official repositories:
 From the `AfraWeakTimedReduction` directory:
 
 ```bash
-python3 tools/rebeca_to_statespace.py ../Examples/models/*.rebeca
+python3 tools/rebeca_to_statespace.py \
+  src/test/resources/afra/rebeca/*.rebeca \
+  --output-dir src/test/resources/rebeca-generated
 ```
 
-The defaults use:
+The seven Rebeca sources are committed under
+`src/test/resources/afra/rebeca/`; the command above regenerates their committed
+golden exports in place.
+
+Without command-line overrides, the script defaults to:
 
 - Afra archive: `../Afra/Afra-macosx.cocoa.aarch64.tar.gz`
 - output directory: `../Examples/models/statespace/`

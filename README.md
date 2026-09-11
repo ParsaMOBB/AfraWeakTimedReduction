@@ -131,7 +131,9 @@ checker, compile it, and export the `.statespace` that this project consumes.
 The repository includes a wrapper for the complete pipeline:
 
 ```bash
-python3 tools/rebeca_to_statespace.py ../Examples/models/*.rebeca
+python3 tools/rebeca_to_statespace.py \
+  src/test/resources/afra/rebeca/*.rebeca \
+  --output-dir src/test/resources/rebeca-generated
 ```
 
 It requires Java 17+ and a C++11 compiler, but does not start Afra. See
@@ -255,9 +257,99 @@ See [docs/semantics.md](docs/semantics.md).
 
 ### RMC-generated `mood` example
 
-These diagrams come from the actual TTS exports generated from `mood1.rebeca`
-and `mood2.rebeca`. For this comparison, only `mood.LAUGH` and `mood.CRY` are
-observable; `mood.START`, `mood.HAPPINESS`, and `mood.SADNESS` are internal.
+This example exercises the complete workflow rather than constructing a TTS by
+hand:
+
+```text
+mood1.rebeca / mood2.rebeca
+             |
+             v  RMC 2.14, TTS semantics
+mood1.statespace / mood2.statespace
+             |
+             +--> Afra StateSpaceTransformer --> DOT/SVG diagrams
+             |
+             +--> awtr weak-timed comparison --> equivalent
+```
+
+The Rebeca sources and their generated `.statespace` files are both committed,
+so the diagrams and equivalence test can be traced back to the actual models.
+The two complete source models are shown side by side below, formatted for
+readability; their filenames link to the exact files used by the generator.
+
+<table>
+  <thead>
+    <tr>
+      <th><a href="src/test/resources/afra/rebeca/mood1.rebeca"><code>mood1.rebeca</code></a></th>
+      <th><a href="src/test/resources/afra/rebeca/mood2.rebeca"><code>mood2.rebeca</code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td valign="top"><pre><code>// observable: mood.LAUGH,mood.CRY
+reactiveclass MoodSystem(2) {
+  statevars {
+    boolean happyBranch;
+  }
+  MoodSystem() {
+    happyBranch = false;
+    self.start();
+  }
+  msgsrv start() {
+    happyBranch = ?(true, false);
+    if (happyBranch) {
+      self.happiness() after(2);
+    } else {
+      self.sadness() after(3);
+    }
+  }
+  msgsrv happiness() {
+    self.laugh() after(3);
+  }
+  msgsrv laugh() {
+    self.start();
+  }
+  msgsrv sadness() {
+    self.cry() after(5);
+  }
+  msgsrv cry() {
+    self.start();
+  }
+}
+main {
+  MoodSystem mood():();
+}</code></pre></td>
+      <td valign="top"><pre><code>// observable: mood.LAUGH,mood.CRY
+reactiveclass MoodSystem(2) {
+  statevars {
+    boolean laughBranch;
+  }
+  MoodSystem() {
+    self.start();
+  }
+  msgsrv start() {
+    laughBranch = ?(true, false);
+    if (laughBranch) {
+      self.laugh() after(5);
+    } else {
+      self.cry() after(8);
+    }
+  }
+  msgsrv laugh() {
+    self.start();
+  }
+  msgsrv cry() {
+    self.start();
+  }
+}
+main {
+  MoodSystem mood():();
+}</code></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+For the comparison, only `mood.LAUGH` and `mood.CRY` are observable;
+`mood.START`, `mood.HAPPINESS`, and `mood.SADNESS` are internal.
 
 In `mood1`, the happy branch waits 2 units, performs the internal
 `mood.HAPPINESS` action, and waits another 3 units before `mood.LAUGH`. The sad

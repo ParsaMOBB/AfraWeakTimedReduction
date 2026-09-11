@@ -1,0 +1,35 @@
+reactiveclass Teacher(2){
+knownrebecs{
+Student student;
+}
+statevars{
+int lessonLevel;
+}
+Teacher(){
+lessonLevel=0;
+self.teach();
+}
+msgsrv teach(){
+lessonLevel=(lessonLevel+1)%2;
+student.learn(lessonLevel)after(2);
+}
+}
+reactiveclass Student(2){
+knownrebecs{
+Teacher teacher;
+}
+statevars{
+int wand;
+}
+Student(){
+wand=0;
+}
+msgsrv learn(int receivedLevel){
+wand=(wand+1)%3;
+teacher.teach();
+}
+}
+main{
+Teacher teacher(student):();
+Student student(teacher):();
+}

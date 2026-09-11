@@ -1,0 +1,33 @@
+//observable : teacher.TEACH
+reactiveclass Teacher(2) {
+knownrebecs {
+Student student;
+}
+statevars{
+int lessonLevel;
+int wand;
+}
+Teacher(){
+lessonLevel= 0;
+wand =0;
+self.teach();
+}
+msgsrv teach() {
+lessonLevel=(lessonLevel+1)%2;
+student.learn(lessonLevel)after(2);
+}
+}
+reactiveclass Student(2) {
+knownrebecs {
+Teacher teacher;
+}
+Student(){
+}
+msgsrv learn(int receivedLevel){
+teacher.teach();
+}
+}
+main{
+Teacher teacher(student):();
+Student student(teacher):();
+}

@@ -64,6 +64,7 @@ them before you start editing, or you will lose them.
 | `src/test/resources/caseii/*.tts` | the transcribed Case II systems, one edge per line |
 | `src/test/resources/legacy/` | the ten recorded acceptance cases + `manifest.txt` |
 | `src/test/resources/afra/` | the Afra export fixture + its provenance note + the Rebeca model |
+| `src/test/resources/afra/rebeca/` | the seven source models used to generate the `mood`, `teacher`, and `chain` fixtures |
 | `src/test/resources/readme/` | the three `.statespace` models displayed and compared in the README |
 | `src/test/resources/rebeca-generated/` | seven unmodified RMC 2.14 exports used as integration fixtures |
 | `evaluation/results.csv` | **the only place thesis numbers may come from** |
