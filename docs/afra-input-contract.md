@@ -134,6 +134,7 @@ a duration. `AfraStateSpaceSourceTest.shiftIsProvenanceOnly` pins this down.
 | --- | --- |
 | a transition endpoint that is not a declared state | the relation would be ill-defined |
 | a duplicate `state/@id` | state identity would be ambiguous |
+| a `state/@id` containing `#` | `#` is reserved for states created by internal transformations |
 | `<time value>` that is negative | time does not run backwards |
 | `<time value>` that is fractional | outside discrete-time support |
 | both a `<messageserver>` and a `<time>` on one transition | the schema forbids it |

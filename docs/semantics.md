@@ -7,7 +7,7 @@ silent steps, and non-negative whole-number delays, it computes the partition of
 the states into weak timed bisimilarity classes, and the quotient system that
 partition induces.
 
-The governing specification is the supervisor-approved pseudocode in
+The governing specification is the project pseudocode in
 `Resources/Weak Time Bisimilutation/weak-time.txt`. The terminology follows
 Definition 9 in `Resources/Weak Time Bisimilutation/Definition.jpg`.
 
@@ -32,7 +32,7 @@ The partition is the coarsest one that is stable under all of those relations,
 computed by repeatedly splitting a block whenever two of its members reach
 different sets of blocks under some label.
 
-## The one semantic decision: time additivity
+## Semantic contract: accumulated weak delays
 
 The pseudocode writes `DelayClosure(s, d)` as "τ*, then a single `d`-labelled
 edge, then τ*". Its comment, and Definition 9, say something more general:
@@ -40,17 +40,18 @@ edge, then τ*". Its comment, and Definition 9, say something more general:
 readings are not the same, and the project's acceptance oracle distinguishes
 them.
 
-`Examples/case II` contains three systems the project owner declares pairwise
-weak timed bisimilar. One of them lets ten units pass in a single step. Another
+`Examples/case II` contains three systems that are pairwise weak timed
+bisimilar. One of them lets ten units pass in a single step. Another
 lets seven pass, takes an internal step, then lets three more pass. Under the
 literal single-edge reading these cannot match: the first system has no
 seven-unit edge to answer the second's. Under the reading where a delay may be
-observed part way through — the time-additivity axiom of a timed transition
-system, where `s -d-> t` implies an intermediate state for every split of `d` —
-they match exactly.
+observed at intermediate instants and durations on a run interrupted only by
+internal steps are added, they match exactly.
 
-**The owner's claim is only true under time additivity.** That is therefore the
-default, and it is what `--time-semantics unit` selects.
+Between two observable actions, only the total elapsed time matters; the
+location of `tau` steps inside that interval does not. Thus `3 + tau + 7`,
+`2 + tau + 8`, and `10 + tau` are equivalent ten-unit waits. This is the
+semantics selected by the default `--time-semantics unit` mode.
 
 ### How it is implemented
 
@@ -71,12 +72,11 @@ caps it and fails loudly rather than thrashing.
 
 ### The other reading is kept
 
-`--time-semantics strict` implements the literal single-edge pseudocode. It
-exists so the assumption stays falsifiable, and there is a test asserting that
-under it the Case II models are *not* equivalent
-(`CaseIIAcceptanceTest.SemanticSensitivity`). If a supervisor decides the strict
-reading is intended, the oracle has to be revisited, and this flag is where that
-conversation starts.
+`--time-semantics strict` implements the literal single-edge pseudocode. It is a
+diagnostic comparison mode, not the semantics used by the project. A test
+asserts that under it the Case II models are *not* equivalent
+(`CaseIIAcceptanceTest.SemanticSensitivity`). Keeping this mode makes the effect
+of the semantic choice explicit and reproducible.
 
 ## Normalisations
 

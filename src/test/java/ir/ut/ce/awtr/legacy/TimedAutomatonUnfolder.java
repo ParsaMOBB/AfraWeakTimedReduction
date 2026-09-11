@@ -15,7 +15,7 @@ import ir.ut.ce.awtr.source.RawTransitionSystem;
 
 /**
  * Test-only bridge from a discrete-time timed automaton to the explicit TTS the
- * approved algorithm consumes.
+ * project algorithm consumes.
  *
  * <p>A state of the TTS is a location together with a clock valuation. Time
  * advances one unit at a time, and is blocked when the resulting valuation would

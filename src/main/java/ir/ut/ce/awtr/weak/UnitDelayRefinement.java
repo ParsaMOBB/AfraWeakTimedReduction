@@ -10,9 +10,9 @@ import ir.ut.ce.awtr.tts.Transition;
 import ir.ut.ce.awtr.tts.TransitionSystem;
 
 /**
- * Makes time additivity explicit by replacing every delay edge labelled
- * {@code d > 1} with {@code d} unit-delay edges through fresh intermediate
- * states.
+ * Makes the run-based delay semantics explicit by replacing every
+ * delay edge labelled {@code d > 1} with {@code d} unit-delay edges through
+ * fresh intermediate states.
  *
  * <p>Doing this once, up front, buys two things. The weak delay relation
  * {@code =d=>} becomes the {@code d}-fold composition of {@code =1=>}, so a
@@ -72,7 +72,7 @@ public final class UnitDelayRefinement {
             for (int step = 1; step < units; step++) {
                 String intermediate =
                         intermediateName(t.source(), units, t.target(), step);
-                builder.stateIfAbsent(intermediate);
+                builder.syntheticStateIfAbsent(intermediate);
                 owners.put(intermediate, t.source());
                 builder.transition(previous, Label.delay(1), intermediate);
                 previous = intermediate;

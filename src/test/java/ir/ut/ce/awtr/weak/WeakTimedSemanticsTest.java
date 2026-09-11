@@ -217,22 +217,40 @@ class WeakTimedSemanticsTest {
         }
 
         @Test
-        @DisplayName("a tau between two halves of a delay does not change the total")
-        void tauInsideADelay() {
-            TransitionSystem oneStep = TransitionSystem.builder("one")
-                    .initialState("a0").state("a1")
-                    .transition("a0", Label.delay(10), "a1")
+        @DisplayName("only total delay between observable actions matters")
+        void tauPositionInsideADelayIsUnobservable() {
+            TransitionSystem tenThenTau = TransitionSystem.builder("10+tau")
+                    .initialState("a0").state("am").state("a1")
+                    .transition("a0", Label.delay(10), "am")
+                    .transition("am", Label.TAU, "a1")
                     .transition("a1", A, "a1")
                     .build();
-            TransitionSystem split = TransitionSystem.builder("split")
+            TransitionSystem threeThenSeven = TransitionSystem.builder("3+tau+7")
                     .initialState("b0").state("bm").state("bn").state("b1")
-                    .transition("b0", Label.delay(7), "bm")
+                    .transition("b0", Label.delay(3), "bm")
                     .transition("bm", Label.TAU, "bn")
-                    .transition("bn", Label.delay(3), "b1")
+                    .transition("bn", Label.delay(7), "b1")
                     .transition("b1", A, "b1")
                     .build();
-            assertTrue(bisimilar(oneStep, split, TimeSemantics.UNIT_ADDITIVE),
-                    "this is the shape the Case II oracle relies on");
+            TransitionSystem twoThenEight = TransitionSystem.builder("2+tau+8")
+                    .initialState("c0").state("cm").state("cn").state("c1")
+                    .transition("c0", Label.delay(2), "cm")
+                    .transition("cm", Label.TAU, "cn")
+                    .transition("cn", Label.delay(8), "c1")
+                    .transition("c1", A, "c1")
+                    .build();
+
+            assertTrue(bisimilar(threeThenSeven, twoThenEight,
+                    TimeSemantics.UNIT_ADDITIVE));
+            assertTrue(bisimilar(threeThenSeven, tenThenTau,
+                    TimeSemantics.UNIT_ADDITIVE));
+            assertTrue(bisimilar(twoThenEight, tenThenTau,
+                    TimeSemantics.UNIT_ADDITIVE));
+
+            assertFalse(bisimilar(threeThenSeven, twoThenEight,
+                    TimeSemantics.STRICT_EDGE));
+            assertFalse(bisimilar(threeThenSeven, tenThenTau,
+                    TimeSemantics.STRICT_EDGE));
         }
 
         @Test

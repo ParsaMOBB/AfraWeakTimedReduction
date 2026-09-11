@@ -95,8 +95,8 @@ that is outside this phase's scope:
 * add a TTS mode to the Java model checker and adapt its states directly, which
   is a change to Afra rather than to this tool.
 
-That decision needs the supervisor. It does not affect this tool's design either
-way, because both end at the same one-method boundary.
+That integration choice does not affect this tool's design, because both paths
+end at the same one-method boundary.
 
 ## Not done in this phase
 

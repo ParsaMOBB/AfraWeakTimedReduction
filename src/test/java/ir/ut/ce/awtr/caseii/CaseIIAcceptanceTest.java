@@ -23,7 +23,7 @@ import ir.ut.ce.awtr.weak.TimeSemantics;
 /**
  * The owner-provided Case II oracle.
  *
- * <p>The project owner declares the three systems drawn in
+ * <p>The project contract declares the three systems drawn in
  * {@code Examples/case II} to be pairwise weak timed bisimilar when exactly
  * {@code getSense}, {@code activateh} and {@code switchoff} are observable. This
  * suite asserts that, and asserts that small deliberate corruptions of the same
@@ -118,7 +118,7 @@ class CaseIIAcceptanceTest {
                             right.hidden(), right.quotient().system(), request()).bisimilar(),
                     "tc2step must be weak timed bisimilar to its own reduction");
 
-            // ...and therefore to each other's, which is the owner's claim
+            // ...and therefore to each other, which is the required claim
             // carried through the reduction.
             assertTrue(ReductionService.compareSystems(
                             left.quotient().system(), right.quotient().system(), request())
@@ -133,15 +133,15 @@ class CaseIIAcceptanceTest {
     }
 
     @Nested
-    @DisplayName("the oracle depends on time additivity")
+    @DisplayName("the oracle depends on accumulated weak delays")
     class SemanticSensitivity {
 
         /**
-         * The owner's claim is only true if a delay may be observed part way
+         * The project semantics requires that a delay may be observed part way
          * through: SmartHome waits ten units in one step, tc2step waits seven,
          * takes an internal step, then waits three. Under the literal
          * single-edge reading of the pseudocode's DelayClosure the two are not
-         * equivalent. Recording that here keeps the assumption falsifiable.
+         * equivalent. Recording that here keeps the semantic choice explicit.
          */
         @Test
         @DisplayName("under strict single-edge delays the three models are NOT equivalent")

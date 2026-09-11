@@ -14,7 +14,7 @@ public enum TimeSemantics {
     /**
      * A delay edge labelled {@code d} is atomic. {@code s =d=> t} holds only via
      * a single {@code d}-labelled edge wrapped in tau steps, exactly as the
-     * approved pseudocode's {@code DelayClosure} is written.
+     * project pseudocode's {@code DelayClosure} is written.
      *
      * <p>Under this reading two systems that let the same total time pass in a
      * different number of steps are <em>not</em> equivalent.
@@ -22,16 +22,15 @@ public enum TimeSemantics {
     STRICT_EDGE,
 
     /**
-     * Time is additive and divisible: a delay edge labelled {@code d} is the
-     * {@code d}-fold composition of unit delays, so every intermediate instant
-     * is a state of the system.
+     * Time is divisible and durations are accumulated across internal steps: a
+     * delay edge labelled {@code d} is the {@code d}-fold composition of unit
+     * delays, so every intermediate instant is a state of the system.
      *
-     * <p>This is the standard time-additivity axiom of a timed transition
-     * system and the reading under which {@code =d=>} is defined by
+     * <p>This is the run-based reading under which {@code =d=>} is defined by
      * "there is a run whose visible content is empty and whose duration is
-     * {@code d}". It is the default because the project's acceptance oracle
-     * requires it: the same behaviour is expressed there once as a single
-     * 10-unit step and once as 7 units, an internal step, then 3 units.
+     * {@code d}". It is the default: the same behaviour may be
+     * expressed as a single 10-unit step, as 3 units then an internal step then
+     * 7 units, or as 2 units then an internal step then 8 units.
      */
     UNIT_ADDITIVE;
 

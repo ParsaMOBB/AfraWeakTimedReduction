@@ -138,7 +138,9 @@ public final class TransitionSystem {
         Builder builder = builder(id).initialState(initialState);
         for (String state : states) {
             if (keep.contains(state)) {
-                builder.state(state);
+                // This is a trusted copy of an already-built system and may
+                // include identifiers introduced by an internal transformation.
+                builder.syntheticStateIfAbsent(state);
             }
         }
         for (Transition t : transitions) {
@@ -159,8 +161,9 @@ public final class TransitionSystem {
      * Collects states and transitions and validates them on {@link #build()}.
      *
      * <p>Validation is part of the public contract: a system that survives
-     * {@code build()} has a declared initial state, no duplicate state ids, and
-     * no transition pointing at an unknown state.
+     * {@code build()} has a declared initial state, no duplicate state ids, no
+     * input state id containing the generated-state separator {@code #}, and no
+     * transition pointing at an unknown state.
      */
     public static final class Builder {
 
@@ -175,14 +178,14 @@ public final class TransitionSystem {
         }
 
         public Builder initialState(String state) {
-            this.initialState = Objects.requireNonNull(state, "initialState");
+            this.initialState = StateIdentifiers.requireValid(state);
             this.states.add(state);
             return this;
         }
 
         /** @throws InvalidModelException if the same id is declared twice */
         public Builder state(String state) {
-            Objects.requireNonNull(state, "state");
+            StateIdentifiers.requireValid(state);
             if (!states.add(state) && !state.equals(initialState)) {
                 throw new InvalidModelException("duplicate state id: " + state);
             }
@@ -191,6 +194,15 @@ public final class TransitionSystem {
 
         /** Adds a state without complaining if it is already known. */
         public Builder stateIfAbsent(String state) {
+            states.add(StateIdentifiers.requireValid(state));
+            return this;
+        }
+
+        /**
+         * Adds a state created by an internal transformation. Such states may use
+         * the separator that input identifiers are forbidden to contain.
+         */
+        public Builder syntheticStateIfAbsent(String state) {
             states.add(Objects.requireNonNull(state, "state"));
             return this;
         }

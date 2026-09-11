@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import ir.ut.ce.awtr.tts.InvalidModelException;
+import ir.ut.ce.awtr.tts.StateIdentifiers;
 
 /**
  * A transition system as acquired, with every interaction still named.
@@ -90,7 +91,7 @@ public final class RawTransitionSystem {
         }
 
         public Builder state(String state, String propositions) {
-            Objects.requireNonNull(state, "state");
+            StateIdentifiers.requireValid(state);
             if (!states.add(state)) {
                 throw new InvalidModelException(
                         "model '" + id + "' declares state '" + state + "' more than once");
@@ -104,7 +105,7 @@ public final class RawTransitionSystem {
 
         /** Overrides the "first state wins" default used for the initial state. */
         public Builder initialState(String state) {
-            this.initialState = Objects.requireNonNull(state, "initialState");
+            this.initialState = StateIdentifiers.requireValid(state);
             return this;
         }
 

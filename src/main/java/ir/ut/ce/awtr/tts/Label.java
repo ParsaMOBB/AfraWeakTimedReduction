@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * A transition label of a discrete-time timed transition system.
  *
- * <p>Exactly three shapes exist, matching the input alphabet of the approved
+ * <p>Exactly three shapes exist, matching the input alphabet of the project
  * algorithm: a silent step, an observable interaction, and the passage of a
  * strictly positive whole number of time units.
  *

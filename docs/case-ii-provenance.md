@@ -50,7 +50,7 @@ and image parsing is deliberately not a product feature.
 
 ## Label normalisation
 
-The owner's stated assumptions, applied verbatim:
+The observation rules applied during transcription were:
 
 | in the diagram | in the fixture | rule |
 | --- | --- | --- |
@@ -109,6 +109,7 @@ seven pass, takes an internal `room.CARRIER_CHANGE_OF_TEMP` step, then lets
 three more pass. `SmartHome-notify.png` splits the same period as 3 + an
 internal `notifyer.send_signal` + 7.
 
-The owner's claim that all three are equivalent therefore holds only if a delay
-may be observed part way through. See `docs/semantics.md`; the assumption is
-explicit, switchable, and has a test asserting that the claim fails without it.
+The equivalence of all three systems therefore uses accumulated weak delays: a
+delay may be observed part way through and internal steps do not reset its
+accumulated duration. See `docs/semantics.md`; the contract is explicit and has
+a test asserting that the diagnostic `strict` mode does not satisfy it.

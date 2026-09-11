@@ -59,7 +59,7 @@ Java 17 and Maven 3.9+ are required. Both are pinned to what the official Afra
 toolchain uses; see [docs/afra-integration.md](docs/afra-integration.md).
 
 ```bash
-mvn clean package                      # compiles, runs 106 unit tests, builds target/awtr.jar
+mvn clean package                      # compiles, runs 109 unit tests, builds target/awtr.jar
 python3 tests/e2e/run_e2e.py           # 62 end-to-end checks against the packaged jar
 python3 evaluation/run_evaluation.py   # regenerates evaluation/results.csv
 ```
@@ -169,19 +169,21 @@ official RMC emitter:
 [docs/afra-input-contract.md](docs/afra-input-contract.md) has the full contract
 with the exact upstream revisions it was read from.
 
-## One assumption worth knowing about
+## Time semantics
 
-The approved pseudocode writes the weak delay closure as a *single* `d`-labelled
+The project pseudocode writes the weak delay closure as a *single* `d`-labelled
 edge wrapped in internal steps. Definition 9 — and the pseudocode's own comment —
 describe reachability by a run of total duration `d`.
 
-The difference decides the acceptance oracle. One of the owner's Case II models
-lets ten time units pass in one step; another lets seven pass, takes an internal
-step, then lets three more pass. They are equivalent only if a delay may be
-observed part way through, which is the time-additivity axiom of a timed
-transition system. **That is the default**, and `--time-semantics strict`
-implements the literal single-edge reading, with a test asserting the oracle
-fails under it.
+Only the total elapsed time between observable actions matters; internal steps
+do not split that observation into different behaviours. One of the Case II
+models lets ten time units pass in one step; another lets seven pass, takes an
+internal step, then lets three more pass. They are equivalent only if a delay
+may be observed part way through and delay durations along an internally
+interrupted run are accumulated. **That run-based semantics is the `unit`
+default.**
+`--time-semantics strict` is retained only as a diagnostic implementation of the
+literal single-edge reading, with a test asserting the oracle fails under it.
 
 See [docs/semantics.md](docs/semantics.md).
 

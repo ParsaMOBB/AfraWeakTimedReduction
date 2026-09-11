@@ -19,8 +19,8 @@ interaction the user did not ask to observe, computes the partition of the
 states into **weak timed bisimilarity** classes over discrete time, and emits the
 quotient transition system together with a metrics report. Every reduction is
 checked on the way out by a verifier written independently of the reducer. It
-lives in `IndependentAfraWeakTimedReduction/`, is 3,578 lines of main code and
-2,136 of test, has **no runtime dependencies outside the JDK**, and passes 106
+lives in `IndependentAfraWeakTimedReduction/`, is 3,618 lines of main code and
+2,192 of test, has **no runtime dependencies outside the JDK**, and passes 109
 unit tests plus 62 end-to-end checks.
 
 ---
@@ -33,7 +33,7 @@ unit tests plus 62 end-to-end checks.
 | --- | --- | --- |
 | `Instruction.md` | the governing specification this work was built to | scope, acceptance criteria |
 | `پروپوزال.pdf` | the project proposal | **motivation and expected outcome — see the warning in §8** |
-| `Resources/Weak Time Bisimilutation/weak-time.txt` | the supervisor-approved pseudocode | Chapter 3; this *is* the algorithm |
+| `Resources/Weak Time Bisimilutation/weak-time.txt` | the project pseudocode | Chapter 3; this *is* the algorithm |
 | `Resources/Weak Time Bisimilutation/Definition.jpg` | Definition 9, weak timed bisimulation | Chapter 2 definitions |
 | `Resources/Weak Time Bisimilutation/2412.15799v2.pdf` | *Checking Timed Bisimilarity with Virtual Clocks* | related work (dense-time, strong) |
 | `Resources/Rebeca/`, `Resources/other sources/` | Rebeca and timed-systems literature | Chapter 2 background |
@@ -77,13 +77,13 @@ transition systems that are large and full of internal detail. If you only care
 about a handful of message servers, most of that detail is noise, and there is no
 tool that removes it while preserving observable *timed* behaviour.
 
-**Approach.** Take the supervisor-approved discrete weak-timed-bisimilarity
+**Approach.** Take the project's discrete weak-timed-bisimilarity
 algorithm, apply it directly to Afra's export, and emit the quotient.
 
 **Contribution.** A working, verified reducer; a documented reading of Afra's
 export contract derived from official sources; and — the part with actual
 intellectual content — **the identification and resolution of an ambiguity in
-the approved pseudocode.**
+the project pseudocode.**
 
 ### The finding to build Chapter 3 around
 
@@ -98,7 +98,7 @@ Definition 9 quantifies over `d ∈ ℝ≥0` with `q =d=> q'` defined by "there 
 run `w` with `Untimed(w) = ε` and `Duration(w) = d`". Those are different
 relations.
 
-The owner's Case II oracle decides between them:
+The Case II oracle decides between them:
 
 | model | how the same period is spent |
 | --- | --- |
@@ -106,15 +106,16 @@ The owner's Case II oracle decides between them:
 | `SmartHome-tc2step.png` | 7 units, an internal `room.CARRIER_CHANGE_OF_TEMP`, 3 units |
 | `SmartHome-notify.png` | 3 units, an internal `notifyer.send_signal`, 7 units |
 
-The owner declares all three pairwise weak timed bisimilar. Under the literal
-single-edge reading they are **not**: the first system has no 7-unit edge with
-which to answer the second's. Under the run-based reading — the time-additivity
-axiom of a timed transition system, where `s -d-> t` implies an intermediate
-state for every split of `d` — they are.
+The project contract declares all three pairwise weak timed bisimilar. Under the
+literal single-edge reading they are **not**: the first system has no 7-unit edge
+with which to answer the second's. Under the run-based reading — the
+time-additivity axiom of a timed transition system, where `s -d-> t` implies an
+intermediate state for every split of `d` — they are.
 
 So the pseudocode as literally written cannot satisfy the project's own
 acceptance oracle. The implementation takes the run-based reading as the
-default, keeps the literal one behind `--time-semantics strict`, and has a test
+default, keeps the literal one behind `--time-semantics strict`
+as a diagnostic comparison, and has a test
 (`CaseIIAcceptanceTest.SemanticSensitivity`) asserting the oracle fails under
 `strict`. That test is your evidence; cite it.
 
@@ -168,10 +169,11 @@ see §8.
 
 ### Test totals
 
-106 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
+109 unit tests (0 failures, 0 errors, 0 skipped) + 62 end-to-end checks.
 Breakdown: legacy baseline 21, Case II 12, specification-level semantics 23,
 quotient soundness incl. 5 mutation rejections 23, Afra reader incl. 8 rejection
-cases 17, architecture + adapter contract 8, visualization 2.
+cases 17, architecture + adapter contract 8, state identifier validation 3,
+visualization 2.
 
 ### Toolchain
 
@@ -228,7 +230,7 @@ given.
 | "the tool scales to industrial models" | largest model tested is 42 states | "evaluated on models up to 42 states; scaling is future work" |
 | "runtime grows as …" | the measurements are dominated by JVM startup | quote the numbers, draw no curve |
 | "the export fixture came out of Afra" | it is a field-by-field back-transcription of Afra's own rendering | "reconstructed from Afra's Graphviz rendering in RMC's exact byte format; provenance gap recorded" |
-| "the tool implements the approved pseudocode" | it implements a *disambiguated* reading of it | "implements the pseudocode under the run-based delay semantics of Definition 9; the literal reading is available and shown to fail the oracle" |
+| "the tool implements the pseudocode literally" | it implements a *disambiguated* reading of it | "implements the pseudocode under the run-based delay semantics of Definition 9; the literal reading is available and shown to fail the oracle" |
 | "supports Timed Rebeca models" | it reads state spaces, not Rebeca source | "consumes Afra TTS state-space exports" |
 | "supports dense time" | explicitly out of scope; fractional durations are rejected | "discrete time only" |
 | "FTTS exports are supported" | FTTS carries no `<time>` elements, and this is not even detected | "TTS exports only; FTTS detection is future work" |
@@ -242,16 +244,19 @@ artefact precisely so this cannot be lost.
 
 ## 8. Open items and warnings
 
-### Needs the supervisor before the thesis commits to it
+### Time semantics
 
-1. **The time-additivity reading (§3).** This is the load-bearing assumption.
-   If the supervisor rules that the literal single-edge pseudocode is intended,
-   the Case II oracle is unsatisfiable and *that* becomes the finding instead.
-   Either way the thesis has a result; you need to know which one.
-2. **The Afra export provenance.** `src/test/resources/afra/README.md` gives the
+1. **Accumulated weak delays (§3).** Only total elapsed time between observable
+   actions matters. Internal steps may occur at different instants, so
+   `3+tau+7`, `2+tau+8`, and `10+tau` are equivalent. The default `unit` mode
+   implements this contract; `strict` is diagnostic.
+
+### Remaining coordination items
+
+1. **The Afra export provenance.** `src/test/resources/afra/README.md` gives the
    four steps to produce a first-party export from Afra. Doing that closes the
    one acceptance criterion currently met in format but not in provenance.
-3. **Thesis and poster repository locations** were never decided; `Instruction.md`
+2. **Thesis and poster repository locations** were never decided; `Instruction.md`
    says they must be confirmed with the owner.
 
 ### The proposal has not been mined
@@ -292,7 +297,7 @@ misleading.
 
 ```bash
 cd IndependentAfraWeakTimedReduction
-mvn clean package                      # expect: 106 tests, 0 failures/errors/skipped
+mvn clean package                      # expect: 109 tests, 0 failures/errors/skipped
 python3 tests/e2e/run_e2e.py           # expect: 62/62 checks passed
 python3 evaluation/run_evaluation.py   # rewrites evaluation/results.csv + raw/
 git rev-parse HEAD                     # the commit to cite

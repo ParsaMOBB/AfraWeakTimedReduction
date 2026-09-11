@@ -1,18 +1,21 @@
 # Limitations, risks, and open questions
 
-## Needs a supervisor decision
+## Time semantics
 
-### 1. Time additivity is an assumption, not a citation
+### 1. Elapsed time is accumulated across internal steps
 
-The approved pseudocode writes the weak delay closure as a single `d`-labelled
+The project pseudocode writes the weak delay closure as a single `d`-labelled
 edge wrapped in tau steps. Definition 9 and the pseudocode's own comment
-describe something more general. The owner's Case II oracle is only satisfiable
-under the more general reading, so that is the default.
+describe something more general. The Case II oracle is only satisfiable under
+the more general reading, so that is the default.
 
-This is the single most consequential decision in the project. It is
-implemented as a switch (`--time-semantics unit|strict`) with a test asserting
-that the oracle fails under `strict`, so it can be revisited without archaeology.
-**It should be confirmed explicitly before the write-up commits to it.**
+Between two observable actions, only the total elapsed time matters, and the
+position of internal steps does not. Consequently, `3 + tau + 7`,
+`2 + tau + 8`, and `10 + tau` represent the same ten-unit observable delay.
+The `unit` mode implements this semantics. The `strict` mode is retained only
+as a diagnostic comparison with the literal single-edge pseudocode.
+
+## Remaining provenance questions
 
 ### 2. The committed Afra export is a back-transcription
 

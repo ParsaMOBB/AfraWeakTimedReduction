@@ -1,6 +1,6 @@
 # Traceability
 
-Each step of the approved pseudocode in
+Each step of the project pseudocode in
 `Resources/Weak Time Bisimilutation/weak-time.txt`, the code that implements it,
 and the tests that exercise it directly.
 
@@ -35,6 +35,7 @@ reading is implemented.
 | `executionTime` / `shift` are provenance | `source/RawTransition` | `CommittedExport.shiftIsProvenanceOnly` |
 | nested per-actor detail is skipped | `AfraStateSpaceSource.read` | `ignoresNestedActorDetail` |
 | malformed input is rejected with a location | `AfraStateSpaceSource`, `tts/InvalidModelException` | `Rejections` (8 cases) |
+| `#` is reserved for generated state ids | `tts/StateIdentifiers`, both transition-system builders | `StateIdentifiersTest` |
 | no DTD, no external entities | `AfraStateSpaceSource.secureFactory` | `externalEntitiesAreDisabled` |
 
 ## Acceptance criteria from `Instruction.md`
