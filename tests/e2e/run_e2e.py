@@ -252,6 +252,48 @@ def case_determinism() -> None:
     shutil.rmtree(out_b, ignore_errors=True)
 
 
+def case_comparison_method_is_selectable() -> None:
+    """`equivalent` must be able to decide by reducing each side separately."""
+    print("\n[8] the comparison method is selectable")
+    left = EVALUATION / "smarthome.statespace"
+    right = EVALUATION / "smarthome-notify.statespace"
+    observable = "getSense,activateh,switchoff"
+
+    union = run(["equivalent", str(left), str(right), "--observable", observable])
+    reduced = run(["equivalent", str(left), str(right), "--observable", observable,
+                   "--method", "reduced-iso"])
+    check(union.returncode == EXIT_OK, "the union method says equivalent")
+    check(reduced.returncode == union.returncode,
+          "reducing each side separately gives the same verdict")
+    check("method             reduced-iso" in reduced.stdout, "the method is reported")
+    check("witness" in reduced.stdout, "a positive answer names its witness")
+    check("reduced states" in reduced.stdout, "both reduced sizes are reported")
+
+    # The same mutation the union method catches, caught structurally.
+    original = MODELS / "tiny.statespace"
+    mutant_dir = Path(tempfile.mkdtemp(prefix="awtr-e2e-method-"))
+    mutant = mutant_dir / "tiny-mutant.statespace"
+    mutant.write_text(original.read_text().replace('<time value="4"/>', '<time value="5"/>'))
+
+    negative = run(["equivalent", str(original), str(mutant), "--observable", "poll",
+                    "--method", "reduced-iso"])
+    check(negative.returncode == EXIT_NEGATIVE,
+          f"exit code 1 for the mutant (got {negative.returncode})")
+    check("difference" in negative.stdout, "a negative answer says what differed")
+
+    spliced = run(["equivalent", str(left), str(right), "--observable", observable,
+                   "--method", "reduced-iso-spliced"])
+    check(spliced.returncode == EXIT_OK, "the spliced form answers this pair too")
+    check("not canonical" in spliced.stderr,
+          "comparing the spliced quotient warns that it is not a decision procedure")
+
+    unknown = run(["equivalent", str(left), str(right), "--observable", observable,
+                   "--method", "nonsense"])
+    check(unknown.returncode == EXIT_INVALID_INPUT,
+          f"exit code 2 for an unknown method (got {unknown.returncode})")
+    shutil.rmtree(mutant_dir, ignore_errors=True)
+
+
 def main() -> int:
     jar = ROOT / "target" / "awtr.jar"
     if not os.environ.get("AWTR_CMD") and not jar.is_file():
@@ -266,6 +308,7 @@ def main() -> int:
     case_semantic_mutation()
     case_time_semantics_is_selectable()
     case_determinism()
+    case_comparison_method_is_selectable()
 
     print(f"\n{checks - len(failures)}/{checks} checks passed")
     if failures:

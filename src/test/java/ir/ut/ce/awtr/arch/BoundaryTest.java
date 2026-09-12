@@ -34,7 +34,7 @@ class BoundaryTest {
 
     /** Packages that must stay free of any I/O, XML or CLI knowledge. */
     private static final List<String> CORE_PACKAGES =
-            List.of("tts", "weak", "quotient", "verify");
+            List.of("tts", "weak", "quotient", "verify", "iso");
 
     /** Package prefixes the core is not allowed to reach for. */
     private static final List<String> FORBIDDEN_IN_CORE = List.of(

@@ -16,6 +16,7 @@ import ir.ut.ce.awtr.report.ArtifactWriter;
 import ir.ut.ce.awtr.report.StateSpaceDotWriter;
 import ir.ut.ce.awtr.source.ObservableSet;
 import ir.ut.ce.awtr.tts.InvalidModelException;
+import ir.ut.ce.awtr.tts.TransitionSystem;
 import ir.ut.ce.awtr.weak.TimeSemantics;
 import ir.ut.ce.awtr.weak.UnitDelayRefinement;
 
@@ -30,6 +31,7 @@ import ir.ut.ce.awtr.weak.UnitDelayRefinement;
  * <pre>{@code
  * awtr reduce MODEL.statespace --observable getSense,activateh --output-dir DIR
  * awtr equivalent A.statespace B.statespace --observable getSense
+ * awtr equivalent A.statespace B.statespace --observable getSense --method reduced-iso
  * awtr inspect MODEL.statespace
  * awtr visualize MODEL.statespace --output MODEL.dot
  * }</pre>
@@ -131,15 +133,65 @@ public final class Cli {
         Path left = options.requirePath(0, "A.statespace");
         Path right = options.requirePath(1, "B.statespace");
         ReductionRequest request = options.request();
+        ComparisonMethod method = ComparisonMethod.parse(options.value("method", null));
 
+        return method.reducesSeparately()
+                ? equivalentByReducedForm(left, right, request, method)
+                : equivalentByUnion(left, right, request);
+    }
+
+    private int equivalentByUnion(Path left, Path right, ReductionRequest request) {
         ReductionService.ComparisonResult result = ReductionService.compare(
                 new AfraStateSpaceSource(left), new AfraStateSpaceSource(right), request);
 
         out.println(result.bisimilar() ? "WEAK_TIMED_BISIMILAR" : "NOT_WEAK_TIMED_BISIMILAR");
+        out.println("method             " + ComparisonMethod.UNION.token());
+        out.println("time semantics     " + request.timeSemantics().token());
         out.println("left               " + result.left().stateCount() + " states");
         out.println("right              " + result.right().stateCount() + " states");
         out.println("classes            " + result.partition().blockCount());
         return result.bisimilar() ? EXIT_OK : EXIT_NEGATIVE;
+    }
+
+    /**
+     * Reduces each model on its own and compares the two reductions as graphs.
+     * Prints both reduced sizes, because a negative answer is only meaningful
+     * next to what was actually compared.
+     */
+    private int equivalentByReducedForm(Path left, Path right, ReductionRequest request,
+                                        ComparisonMethod method) {
+        ReductionService.ReducedComparisonResult result = ReductionService.compareByReducedForm(
+                new AfraStateSpaceSource(left), new AfraStateSpaceSource(right), request, method);
+
+        if (!result.conclusive()) {
+            err.println("UNDETERMINED       " + result.isomorphism().reason());
+            return EXIT_INTERNAL;
+        }
+        out.println(result.equivalent() ? "WEAK_TIMED_BISIMILAR" : "NOT_WEAK_TIMED_BISIMILAR");
+        out.println("method             " + method.token());
+        out.println("time semantics     " + request.timeSemantics().token());
+        out.println("left               " + describe(result.left(), result.leftReduced()));
+        out.println("right              " + describe(result.right(), result.rightReduced()));
+        if (result.equivalent()) {
+            out.println("witness            " + result.isomorphism().mapping().size()
+                    + " states matched" + (result.isomorphism().forced()
+                    ? " without backtracking" : " after "
+                    + result.isomorphism().searchNodes() + " candidate assignments"));
+        } else {
+            out.println("difference         " + result.isomorphism().reason());
+        }
+        if (method == ComparisonMethod.REDUCED_ISOMORPHISM_SPLICED) {
+            err.println("warning: the spliced quotient is not canonical; two equivalent models"
+                    + " can reduce to different graphs. See docs/experiments/"
+                    + "quotient-isomorphism.md");
+        }
+        return result.equivalent() ? EXIT_OK : EXIT_NEGATIVE;
+    }
+
+    private static String describe(TransitionSystem original, TransitionSystem reduced) {
+        return original.stateCount() + " states, " + original.transitionCount()
+                + " transitions  ->  " + reduced.stateCount() + " reduced states, "
+                + reduced.transitionCount() + " reduced transitions";
     }
 
     private int inspect(Options options) {
@@ -228,6 +280,15 @@ public final class Cli {
                   awtr visualize MODEL.statespace [--output FILE|-]
 
                 options
+                  --method METHOD              how 'equivalent' decides:
+                                                 union                one refinement over the
+                                                                      disjoint union (default)
+                                                 reduced-iso          reduce each model to its
+                                                                      saturated quotient and test
+                                                                      the two for isomorphism
+                                                 reduced-iso-spliced  the same, comparing the
+                                                                      quotient 'reduce' writes;
+                                                                      not canonical, experimental
                   --observable NAME[,NAME...]  message servers to keep visible; every other
                                                interaction is hidden as tau. A bare name matches
                                                any owner; 'owner.name' matches one owner.

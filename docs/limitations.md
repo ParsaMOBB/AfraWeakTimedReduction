@@ -15,6 +15,12 @@ position of internal steps does not. Consequently, `3 + tau + 7`,
 The `unit` mode implements this semantics. The `strict` mode is retained only
 as a diagnostic comparison with the literal single-edge pseudocode.
 
+`strict` is therefore not a cheaper way to compute the `unit` answer, whatever
+comparison method is used: it decides a strictly finer relation, and it rejects
+the Case II oracle. `delay(1)` self-loop against `delay(2)` self-loop is the
+smallest witness. See
+[experiments/quotient-isomorphism.md](experiments/quotient-isomorphism.md).
+
 ## Remaining provenance questions
 
 ### 2. The Case II SmartHome export is still a back-transcription
@@ -44,19 +50,31 @@ model is available it should replace this file.
 
 ## Known limitations
 
-### The quotient is sound, not minimal
+### The quotient `reduce` writes is sound, not canonical
 
-Weak bisimulation quotients are not canonical. Two weakly bisimilar systems can
-quotient to non-isomorphic results, because the quotient keeps the silent
-structure of the system it came from. What is guaranteed — and checked by an
-independent verifier on every run — is that the quotient is weak timed bisimilar
-to its source.
+The quotient keeps the silent structure of the system it came from, so two
+weakly bisimilar systems can quotient to non-isomorphic results. What is
+guaranteed — and checked by an independent verifier on every run — is that the
+quotient is weak timed bisimilar to its source.
 
 In practice the three Case II models do all reduce to the same 10-state
 quotient, but that is a fact about those models, not a theorem this tool
-provides. Producing a canonical minimal form would need saturation followed by
-redundant-tau elimination, which trades state count for a much denser transition
-relation.
+provides about its output.
+
+A canonical form does exist and is now implemented, as the comparison key behind
+`equivalent --method reduced-iso`: the saturated quotient, whose edges come from
+the weak transition relation rather than from the model's own edges, is
+determined by the equivalence classes alone. It is canonical and minimal, and
+correspondingly denser and bigger — 28 states against 10 on the Case II models,
+because it is built over the unit-refined system. `reduce` therefore still
+writes the readable form. The proof, the counterexample, and the measured
+frequency of the defect are in
+[experiments/quotient-isomorphism.md](experiments/quotient-isomorphism.md).
+
+Open: a form that is canonical *and* small. Any deterministic function of the
+saturated quotient is still canonical, so applying the delay-chain splicing pass
+to the saturated quotient rather than to the raw one would produce one. That was
+not needed to settle the question and is not implemented.
 
 ### Unit refinement costs states
 

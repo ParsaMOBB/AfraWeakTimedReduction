@@ -18,6 +18,8 @@ and the tests that exercise it directly.
 | **Step 4** return the partition | `weak/Partition` (canonical block numbering) | `QuotientVerificationTest.Structure` |
 | *beyond the pseudocode:* the quotient | `quotient/QuotientBuilder`, `quotient/Quotient` | `QuotientVerificationTest` |
 | *beyond the pseudocode:* checking the quotient | `verify/WeakTimedRelationVerifier` | `QuotientVerificationTest.Rejects` (five mutants) |
+| *beyond the pseudocode:* the canonical (saturated) quotient | `quotient/SaturatedQuotient` | `ReducedFormComparisonTest`, `ReducedFormSizeSweepTest` |
+| *beyond the pseudocode:* comparing two reductions as graphs | `iso/TransitionSystemIsomorphism`, `app/ComparisonMethod` | `TransitionSystemIsomorphismTest`, `ReducedFormComparisonTest`, E2E case 8 |
 
 `Definition.jpg` (Definition 9) supplies the terminology and the `d = 0` case;
 `docs/semantics.md` records where it and the pseudocode differ, and which
