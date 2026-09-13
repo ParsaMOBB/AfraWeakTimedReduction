@@ -80,6 +80,7 @@ awtr visualize MODEL.statespace [--output FILE|-]
 | option | meaning |
 | --- | --- |
 | `--observable NAME[,NAME...]` | message servers to keep visible; everything else becomes internal. A bare name matches any owner; `owner.name` matches one owner. Required — pass an empty value to hide everything. |
+| `--method union\|reduced-iso\|reduced-iso-spliced` | how `equivalent` decides (default `union`); see below |
 | `--output-dir DIR` | where the artefacts go (default `awtr-output`) |
 | `--initial-state ID` | override the document-order default |
 | `--time-semantics unit\|strict` | whether a `d`-unit delay may be observed part way through (default `unit`) |
@@ -89,6 +90,38 @@ awtr visualize MODEL.statespace [--output FILE|-]
 
 Exit codes: `0` success, `1` not equivalent or verification failed, `2` invalid
 input, `3` internal error.
+
+### Two ways to decide equivalence
+
+`equivalent` defaults to `--method union`: both models go into one disjoint
+union, that union is refined once, and the answer is whether the two initial
+states landed in the same class.
+
+`--method reduced-iso` never relates the two models at all. It reduces each one
+separately to its *saturated* quotient — one state per class, with the edges
+given by the weak transition relation rather than by the edges the model happens
+to be written with — and tests those two for isomorphism. That form is
+canonical, so the two methods decide the same question; the proof, the
+counterexample that rules out the cheaper-looking form, and the measurements are
+in [docs/experiments/quotient-isomorphism.md](docs/experiments/quotient-isomorphism.md).
+It is the method to reach for when one model is compared against many, since
+each reduction is computed once.
+
+```
+$ awtr equivalent smarthome.statespace smarthome-notify.statespace \
+      --observable getSense,activateh,switchoff --method reduced-iso
+WEAK_TIMED_BISIMILAR
+method             reduced-iso
+time semantics     unit
+left               16 states, 18 transitions  ->  28 reduced states, 38 reduced transitions
+right              42 states, 52 transitions  ->  28 reduced states, 38 reduced transitions
+witness            28 states matched without backtracking
+```
+
+`--method reduced-iso-spliced` compares the quotient `reduce` writes instead.
+That quotient is smaller and far more readable, but it is **not** canonical: it
+can call two equivalent models different. It is kept as the experimental
+subject, and warns on stderr.
 
 `inspect` is the quickest way to find out what an export actually contains
 before choosing an observable set:
@@ -406,6 +439,7 @@ on one quotient is a stronger statement than the checker returning "yes".
 | [case-ii-provenance.md](docs/case-ii-provenance.md) | how the diagrams became fixtures |
 | [traceability.md](docs/traceability.md) | pseudocode step → code → test |
 | [limitations.md](docs/limitations.md) | what is unproven, unsupported, or needs a decision |
+| [experiments/quotient-isomorphism.md](docs/experiments/quotient-isomorphism.md) | can equivalence be decided by reducing each model and comparing the reductions? proof, counterexample, measurements |
 
 ## Scope
 
